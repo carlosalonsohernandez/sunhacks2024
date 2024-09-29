@@ -20,12 +20,17 @@ const Calendar = ({ year, month, tasks, onEditTask }) => {
   // Create an array of numbers representing each day of the month
   const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
-  // Filter tasks that fall within the displayed month
-  const getTasksForDay = (day) => {
-    return tasks.filter(task => {
-      const taskDate = new Date(task.startDate); // Adjust based on task data
+  // Check if a task falls on a specific day, based on its recurring dates
+  const isTaskOnDay = (day, task) => {
+    return task.recurringDates.some((date) => {
+      const taskDate = new Date(date);
       return taskDate.getFullYear() === year && taskDate.getMonth() === month && taskDate.getDate() === day;
     });
+  };
+
+  // Get tasks for a specific day
+  const getTasksForDay = (day) => {
+    return tasks.filter(task => isTaskOnDay(day, task));
   };
 
   return (
