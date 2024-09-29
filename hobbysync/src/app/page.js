@@ -153,38 +153,48 @@ export default function Home() {
     return recurringDates;
   };
 
-  // Save a new task or update an existing one
+
+    // Save a new task or update an existing one
   const handleSaveTask = (taskData) => {
     const updatedTasks = [...tasks];
     const recurringDates = getRecurringDates(taskData);
- 
+
     if (taskToEditIndex !== null) {
+      // Update the existing task
       updatedTasks[taskToEditIndex] = { ...taskData, recurringDates };
+      setTasks(updatedTasks); // Update the task list in state
     } else {
       // Save a new task
-      setTasks([...tasks, taskData]);
-      //const saveTask = async () => {
-        //try {
-         // const response = await fetch('http://localhost:8000/tasks', {
-          //  method: 'POST',
-           // headers: {
-            //  'Content-Type': 'application/json',
-            //},
-            //body: JSON.stringify(taskData),
-          //});
-          //if (response.ok) {
-            //const result = await response.json();
-            //console.log('Login successful:', result);
-          //} else {
-           // const errorData = await response.json();
-          //}
-        //} catch (error) {
-          //console.error('Login error:', error);
-        //}
-      //};
-      //saveTask();
-      
-      //console.log(taskData);
+      const saveTask = async () => {
+        try {
+          const response = await fetch('http://localhost:8000/tasks', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(taskData),
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+
+            // Add the returned task ID to the task data
+            const taskWithId = { ...taskData, _id: result._id || result.taskId };
+
+            // Add the new task with the ID to the internal state
+            setTasks([...tasks, taskWithId]);
+
+            console.log('Task saved successfully:', taskWithId);
+          } else {
+            const errorData = await response.json();
+            console.error('Failed to save task:', errorData);
+          }
+        } catch (error) {
+          console.error('Error saving task:', error);
+        }
+      };
+
+      saveTask();
     }
   };
 

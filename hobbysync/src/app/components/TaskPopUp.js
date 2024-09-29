@@ -48,10 +48,9 @@ const TaskPopup = ({ onClose, onSave, taskData = {}, fetchHobbies }) => {
     setIsVisible(true);
   }, []);
 
-
   const handleSave = () => {
     if (!startDate) return; // Ensure start date is required
-    
+
     const task = {
       taskName,
       startDate,
@@ -62,9 +61,6 @@ const TaskPopup = ({ onClose, onSave, taskData = {}, fetchHobbies }) => {
       notes,
       repeatFrequency,
     };
-    console.log(task)
-    
-    axios.post('http://localhost:8000/tasks', task); // Save task to the database
 
     onSave(task);
   };
