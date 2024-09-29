@@ -10,6 +10,7 @@ const TaskPopup = ({ onClose, onSave, taskData = {} }) => {
   const [repeatFrequency, setRepeatFrequency] = useState(taskData.repeatFrequency || 'None');
   const [isVisible, setIsVisible] = useState(false);
   const [isColorDropdownOpen, setIsColorDropdownOpen] = useState(false); // Controls color dropdown visibility
+  const [startDateError, setStartDateError] = useState(false); // Tracks if start date is missing
 
   const colors = [
     { value: '#FF0000', name: 'Red' },
@@ -27,6 +28,11 @@ const TaskPopup = ({ onClose, onSave, taskData = {} }) => {
   }, []);
 
   const handleSave = () => {
+    if (!startDate) {
+      setStartDateError(true); // If start date is not selected, show an error
+      return;
+    }
+
     const task = {
       taskName,
       startDate,
@@ -36,6 +42,7 @@ const TaskPopup = ({ onClose, onSave, taskData = {} }) => {
       notes,
       repeatFrequency,
     };
+
     onSave(task);
     onClose();
   };
@@ -48,7 +55,7 @@ const TaskPopup = ({ onClose, onSave, taskData = {} }) => {
   // Handle color selection and close the dropdown
   const handleColorSelect = (selectedColor) => {
     setColor(selectedColor); // Set the selected color
-    setIsColorDropdownOpen(true); // Close the dropdown after color selection
+    setIsColorDropdownOpen(false); // Close the dropdown after color selection
   };
 
   // Close dropdown if clicked outside
@@ -90,15 +97,24 @@ const TaskPopup = ({ onClose, onSave, taskData = {} }) => {
               className="w-full mt-1 p-2 border border-gray-300 rounded"
             />
           </label>
+
+          {/* Start Date with validation */}
           <label className="w-1/4">
-            Start Date:
+            Start Date:<span className="text-red-500 text-xs">*required</span>
             <input
               type="date"
               value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="w-full mt-1 p-2 border border-gray-300 rounded"
+              onChange={(e) => {
+                setStartDate(e.target.value);
+                setStartDateError(false); // Remove error if start date is set
+              }}
+              className={`w-full mt-1 p-2 border ${startDateError ? 'border-red-500' : 'border-gray-300'} rounded`}
             />
+            {startDateError && (
+              <span className="text-red-500 text-sm">Start date is required</span>
+            )}
           </label>
+
           <label className="w-1/4">
             End Date:
             <input
@@ -190,6 +206,7 @@ const TaskPopup = ({ onClose, onSave, taskData = {} }) => {
           <button
             onClick={handleSave}
             className="px-4 py-2 bg-blue-500 text-white rounded"
+            disabled={!startDate} // Disable save button if no start date
           >
             Save Task
           </button>
