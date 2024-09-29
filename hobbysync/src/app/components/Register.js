@@ -12,11 +12,7 @@ export default function Register({ onClose, onRegister }) {
     },
     hobbyPreferences: [], // Initialize as an array
     availability: {
-      daysOfWeek: [], // Days of the week array
-      timeSlot: {
-        start: '',
-        end: '',
-      }
+      daysOfWeek: [] // Days of the week array
     }
   });
 
@@ -31,15 +27,6 @@ export default function Register({ onClose, onRegister }) {
       setRegisterData({
         ...registerData,
         location: { ...registerData.location, [field]: value },
-      });
-    } else if (name.includes('availability.timeSlot.')) {
-      const [_, field] = name.split('.');
-      setRegisterData({
-        ...registerData,
-        availability: { 
-          ...registerData.availability, 
-          timeSlot: { ...registerData.availability.timeSlot, [field]: value }
-        },
       });
     } else {
       setRegisterData({ ...registerData, [name]: value });
@@ -125,11 +112,7 @@ export default function Register({ onClose, onRegister }) {
       { label: 'Country', name: 'location.country', type: 'text', value: registerData.location.country, placeholder: 'Enter your country' }
     ],
     [
-      { label: 'Hobby Preferences (comma separated)', name: 'hobbyPreferences', type: 'text', value: registerData.hobbyPreferences.join(', '), placeholder: 'Enter your hobby preferences', onChange: handleHobbyPreferencesChange },
-      { label: 'Start Time', name: 'availability.timeSlot.start', type: 'time', value: registerData.availability.timeSlot.start, placeholder: 'Start Time' }
-    ],
-    [
-      { label: 'End Time', name: 'availability.timeSlot.end', type: 'time', value: registerData.availability.timeSlot.end, placeholder: 'End Time' },
+      { label: 'Hobby Preferences', name: 'hobbyPreferences', type: 'text', value: registerData.hobbyPreferences.join(', '), placeholder: 'Separate by comma', onChange: handleHobbyPreferencesChange }
     ],
     [
       // Step with checkboxes for selecting days of the week
