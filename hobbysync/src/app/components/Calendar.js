@@ -1,5 +1,5 @@
-// components/Calendar.js
-"use client"; // Ensure it's a Client Component for using useState
+// components/InteractiveBlock.js
+"use client";
 
 const Calendar = ({ year, month }) => {
   // List of month names to convert the month index to the correct name
