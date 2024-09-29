@@ -35,15 +35,15 @@ const Calendar = ({ year, month }) => {
       </div>
 
       {/* Days in Month */}
-      <div className="grid grid-cols-7 auto-rows-auto gap-5 mt-2 ">
+      <div className="grid grid-cols-7 auto-rows-auto gap-2 mt-4 ">
         {/* Empty divs to align the first day correctly */}
         {Array.from({ length: firstDayOfWeek }).map((_, index) => (
-          <div key={`empty-${index}`} ></div>
+          <div className="border-black-300 border-2 border-solid w-24 md:w-auto h-24 min-h-0 md:min-h-full" key={`empty-${index}`} ></div>
         ))}
         
         {/* Render the actual days of the month */}
         {daysArray.map((day) => (
-          <div key={day} className="border-black border-2 border-solid">{day}</div>
+          <div key={day} className="border-black border-2 border-solid w-24 md:w-auto h-24 min-h-0 md:min-h-full">{day}</div>
         ))}
       </div>
     </div>
