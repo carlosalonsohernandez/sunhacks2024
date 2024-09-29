@@ -128,13 +128,13 @@ const TaskPopup = ({ onClose, onSave }) => {
         <div className="flex justify-end space-x-4">
           <button
             onClick={onClose}
-            className="px-4 py-2 border border-gray-300 rounded text-gray-600"
+            className="px-4  border border-gray-300 rounded text-gray-600"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className="px-4 py-2 bg-blue-500 text-white rounded"
+            className="px-4  bg-blue-500 text-white rounded"
           >
             Save Task
           </button>

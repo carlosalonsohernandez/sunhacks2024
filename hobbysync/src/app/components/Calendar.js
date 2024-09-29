@@ -23,7 +23,6 @@ const Calendar = ({ year, month }) => {
 
   return (
     <div className="ml-9">
-        <div>Hello There</div>
       {/* Weekday Headers */}
       <div className="grid grid-cols-7 gap-0 border-black border-2 border-solid">
         <div>Sunday</div>
