@@ -4,13 +4,15 @@ import Footer from './components/Footer.js';
 import Calendar from './components/Calendar.js'; 
 import TaskPopup from './components/TaskPopUp.js'; 
 import Register from './components/Register.js'; 
-import Login from './components/Login.js'; // Import the new Login component
+import HobbyPopup from './components/HobbyPopUp.js'; 
+import Login from './components/Login.js'; 
+import axios from "axios";
 import { stringify } from 'postcss';
 
 export default function Home() {
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth());
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isTaskPopupOpen, setIsTaskPopupOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
   const [isLoginOpen, setIsLoginOpen] = useState(false); // Track login modal visibility
@@ -89,13 +91,40 @@ export default function Home() {
   };
 
   // Handle register
-  const handleRegister = (userData) => {
-    localStorage.setItem('user', JSON.stringify(userData)); // Save user in localStorage
-    setIsLoggedIn(true);
-    setIsRegisterOpen(false); // Close register modal
+  const handleRegister = async (userData) => {
+    try {
+      const response = await axios.post('http://localhost:8000/register', userData);
+      if (response.status === 200) {
+        localStorage.setItem('user', JSON.stringify(userData)); 
+        setIsLoggedIn(true);
+        setIsRegisterOpen(false); 
+      } else {
+        console.error('Register failed');
+      }
+    } catch (error) {
+      console.error('Error during registration:', error);
+    }
   };
 
+  // Handle logging out
+  const handleLogoutOrSignIn = () => {
+    if (isLoggedIn) {
+      localStorage.removeItem('user'); 
+      setIsLoggedIn(false); 
+    } else {
+      setIsLoginOpen(true); 
+    }
+  };
 
+  // Handle Year Change
+  const handleYearChange = (e) => {
+    let value = parseInt(e.target.value);
+    if (value > 2025) value = 2024;
+    if (value < 2000) value = 2000;
+    setYear(value);
+  };
+
+  // Handle Month Change
   const handleMonthChange = (e) => {
     let value = parseInt(e.target.value);
     if (value > 12) value = 12;
@@ -104,25 +133,45 @@ export default function Home() {
   };
 
   // Open the popup for a new task
-  const openPopup = () => {
-    setTaskToEditIndex(null); // New task
-    setIsPopupOpen(true);
+  const openTaskPopup = () => {
+    setTaskToEditIndex(null); 
+    setIsTaskPopupOpen(true);
   };
 
-  // Close the popup
-  const closePopup = () => {
-    setIsPopupOpen(false);
+  // Close the task popup
+  const closeTaskPopup = () => {
+    setIsTaskPopupOpen(false);
+  };
+
+  // Helper function to calculate recurring dates based on frequency
+  const getRecurringDates = (task) => {
+    const { startDate, endDate, repeatFrequency } = task;
+    const recurringDates = [];
+    let currentDate = new Date(startDate);
+    const lastDate = endDate ? new Date(endDate) : new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), currentDate.getDate());
+
+    while (currentDate <= lastDate) {
+      recurringDates.push(new Date(currentDate));
+      if (repeatFrequency === 'Daily') {
+        currentDate.setDate(currentDate.getDate() + 1);
+      } else if (repeatFrequency === 'Weekly') {
+        currentDate.setDate(currentDate.getDate() + 7);
+      } else if (repeatFrequency === 'Monthly') {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+      } else {
+        break; 
+      }
+    }
+    return recurringDates;
   };
 
   // Save a new task or update an existing one
-  const handleSaveTask = async (taskData) => {
-
+  const handleSaveTask = (taskData) => {
+    const updatedTasks = [...tasks];
+    const recurringDates = getRecurringDates(taskData);
+ 
     if (taskToEditIndex !== null) {
-      // Update the existing task
-      const updatedTasks = tasks.map((task, index) =>
-        index === taskToEditIndex ? taskData : task
-      );
-      setTasks(updatedTasks);
+      updatedTasks[taskToEditIndex] = { ...taskData, recurringDates };
     } else {
       // Save a new task
       setTasks([...tasks, taskData]);
@@ -150,13 +199,28 @@ export default function Home() {
   // Open the popup to edit a task
   const handleEditTask = (index) => {
     setTaskToEditIndex(index);
-    setIsPopupOpen(true); // Open the popup for editing
+    setIsTaskPopupOpen(true); 
   };
 
   // Helper function to truncate the task name
   const truncateTaskName = (name) => {
     return name.length > 6 ? `${name.substring(0, 6)}...` : name;
+  };
 
+  // Open the hobby popup
+  const openHobbyPopup = () => {
+    setIsHobbyPopupOpen(true);
+  };
+
+  // Close the hobby popup
+  const closeHobbyPopup = () => {
+    setIsHobbyPopupOpen(false);
+  };
+
+  // Save a new hobby
+  const handleSaveHobby = (newHobby) => {
+    setHobbies([...hobbies, newHobby]);
+    setIsHobbyPopupOpen(false); 
   };
 
   return (
@@ -168,7 +232,7 @@ export default function Home() {
               src="https://i.ibb.co/X5849y8/hbslogo.png" 
               alt="Hobbies Sync Logo" 
               className="logo" 
-              style={{ height: '40px', width: 'auto' }} // Adjust size as needed
+              style={{ height: '40px', width: 'auto' }} 
             />
           </a>
           <div className="menu-section">
@@ -189,7 +253,7 @@ export default function Home() {
             <img src="https://via.placeholder.com/40" alt="Profile Icon" className="profile-icon" />
           </button>
           <div className="dropdown-contentp">
-            <a href="#profile">Profile</a>
+            <a href="#profile" onClick={handleProfileClick}>Profile</a>
             <a href="#settings">Settings</a>
             <a href="#login-logout" onClick={handleLogoutOrSignIn}>
               {isLoggedIn ? 'Logout' : 'Sign In'}
@@ -202,72 +266,78 @@ export default function Home() {
       </header>
 
       <main className="flex-grow">
-
         <div className="container mx-auto px-4 pb-4">
-
-          <button onClick={openPopup} className="px-4 py-2 bg-green-500 text-white rounded absolute right-4">
-
+          <button onClick={openTaskPopup} className="px-4 py-2 bg-green-500 text-white rounded absolute right-4">
             Add Task
           </button>
 
+          <button onClick={openHobbyPopup} className="px-4 py-2 bg-blue-500 text-white rounded absolute right-28">
+            Add Hobby
+          </button>
+
           {/* Task Popup */}
-          {isPopupOpen && (
+          {isTaskPopupOpen && (
             <TaskPopup
-              onClose={closePopup}
+              onClose={closeTaskPopup}
               onSave={handleSaveTask}
               taskData={taskToEditIndex !== null ? tasks[taskToEditIndex] : {}}
             />
           )}
 
+          {/* Hobby Popup */}
+          {isHobbyPopupOpen && (
+            <HobbyPopup onClose={closeHobbyPopup} onSave={handleSaveHobby} />
+          )}
 
-          {/* User Inputs for Month and Year */}
           <div className="container mx-auto px-4 pb-4"> 
             <div className="flex gap-4 mb-4">
-              {/* Year Dropdown */}
-              <div>
-                <label htmlFor="year" className="block text-lg font-medium">
-                  Year:
-                </label>
-                <select
-                  id="year"
-                  value={year}
-                  onChange={handleYearChange}
-                  className="border border-gray-300 p-2 rounded"
-                >
-                  {Array.from({ length: 31 }, (_, i) => i + 2000).map((yr) => (
-                    <option key={yr} value={yr}>
-                      {yr}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <label htmlFor="year" className="block text-lg font-medium">
+                Year:
+              </label>
+              <select
+                id="year"
+                value={year}
+                onChange={handleYearChange}
+                className="border border-gray-300 p-2 rounded"
+              >
+                {Array.from({ length: 31 }, (_, i) => i + 2000).map((yr) => (
+                  <option key={yr} value={yr}>
+                    {yr}
+                  </option>
+                ))}
+              </select>
 
-              {/* Month Dropdown */}
-              <div>
-                <label htmlFor="month" className="block text-lg font-medium">
-                  Month:
-                </label>
-                <select
-                  id="month"
-                  value={month}
-                  onChange={handleMonthChange}
-                  className="border border-gray-300 p-2 rounded"
-                >
-                  {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map(
-                    (monthName, index) => (
-                      <option key={index} value={index}>
-                        {monthName}
-                      </option>
-                    )
-                  )}
-                </select>
-              </div>
+              <label htmlFor="month" className="block text-lg font-medium">
+                Month:
+              </label>
+              <select
+                id="month"
+                value={month}
+                onChange={handleMonthChange}
+                className="border border-gray-300 p-2 rounded"
+              >
+                {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map(
+                  (monthName, index) => (
+                    <option key={index} value={index}>
+                      {monthName}
+                    </option>
+                  )
+                )}
+              </select>
             </div>
           </div>
 
           {/* Render Calendar component with tasks */}
           <Calendar year={year} month={month} tasks={tasks} onEditTask={handleEditTask} />
 
+          {/* List of hobbies */}
+          <ul className="mt-4">
+            {hobbies.map((hobby, index) => (
+              <li key={index} className="py-1">
+                {hobby.hobbyName} (Difficulty: {hobby.difficulty}) - {hobby.description}
+              </li>
+            ))}
+          </ul>
         </div>
       </main>
 
@@ -350,7 +420,6 @@ export default function Home() {
           onRegister={handleRegister}
         />
       )}
-
     </div>
   );
 }
