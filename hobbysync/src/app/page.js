@@ -14,7 +14,7 @@ export default function Home() {
   const [isLoginOpen, setIsLoginOpen] = useState(false); // Track login modal visibility
   const [loginError, setLoginError] = useState(null); // Track login errors
   const [loginData, setLoginData] = useState({ email: '', password: '' }); // Login form data
-
+  
   const handleYearChange = (e) => {
     let value = parseInt(e.target.value);
     if (value > 2025) value = 2024;
@@ -27,6 +27,23 @@ export default function Home() {
     if (value > 12) value = 12;
     if (value < 1) value = 1;
     setMonth(value - 1);
+
+  // List of years (from 2000 to 2030)
+  const years = Array.from({ length: 31 }, (_, i) => i + 2000);
+
+  // List of month names
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  // Handlers for updating the state
+  const handleYearChange = (e) => {
+    setYear(parseInt(e.target.value));
+  };
+
+  const handleMonthChange = (e) => {
+    setMonth(parseInt(e.target.value));
   };
 
   const openPopup = () => setIsPopupOpen(true);
@@ -126,9 +143,41 @@ export default function Home() {
       </header>
 
       <main className="flex-grow">
-        <div className="container mx-auto p-4">
-          <h1 className="text-4xl font-bold mb-4">Interactive Block Component</h1>
-          <InteractiveBlock />
+        
+         {/* Task Calendar Section */}
+         <div className="container mx-auto p-4">
+          <button
+            onClick={openPopup}
+            className="px-4 py-2 bg-green-500 text-white rounded"
+          >
+            Add Task
+          </button>
+
+          {/* Task List */}
+          <div className="mt-6">
+            {tasks.map((task, index) => (
+              <div
+                key={index}
+                className="p-4 mb-2 border border-gray-300 rounded"
+                style={{ backgroundColor: task.color }}
+              >
+                <h2 className="text-xl font-bold">{task.taskName}</h2>
+                <p>{task.notes}</p>
+                <p>Time: {task.time}</p>
+                <p>Repeat: {task.repeatFrequency}</p>
+                <p>
+                  Dates: {task.startDate} to {task.endDate}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {isPopupOpen && (
+            <TaskPopup
+              onClose={closePopup}
+              onSave={handleSaveTask}
+            />
+          )}
         </div>
 
         {/* Task Calendar Section */}
@@ -159,12 +208,56 @@ export default function Home() {
                 </p>
               </div>
             ))}
+            
+        {/* User Inputs for Month and Year */}
+        <div className="container mx-auto px-4 pb-4">
+          <div className="flex gap-4 mb-4">
+            {/* Year Dropdown */}
+            <div>
+              <label htmlFor="year" className="block text-lg font-medium">
+                Year:
+              </label>
+              <select
+                id="year"
+                value={year}
+                onChange={handleYearChange}
+                className="border border-gray-300 p-2 rounded"
+              >
+                {years.map((yr) => (
+                  <option key={yr} value={yr}>
+                    {yr}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Month Dropdown */}
+            <div>
+              <label htmlFor="month" className="block text-lg font-medium">
+                Month:
+              </label>
+              <select
+                id="month"
+                value={month}
+                onChange={handleMonthChange}
+                className="border border-gray-300 p-2 rounded"
+              >
+                {monthNames.map((monthName, index) => (
+                  <option key={index} value={index}>
+                    {monthName}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Task Popup */}
           {isPopupOpen && (
             <TaskPopup onClose={closePopup} onSave={handleSaveTask} />
           )}
+        {/* Calendar for a specific month */}
+        <div className="container mx-auto p-4">
+          <Calendar year={year} month={month} />
         </div>
       </main>
 
@@ -243,3 +336,4 @@ export default function Home() {
     </div>
   );
 }
+
