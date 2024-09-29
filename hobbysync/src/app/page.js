@@ -10,6 +10,23 @@ export default function Home() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [taskToEditIndex, setTaskToEditIndex] = useState(null); // Track which task is being edited
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Add this to track login status
+
+  // Define handleProfileClick
+  const handleProfileClick = () => {
+    console.log("Profile clicked");
+    // Add logic for navigating to the profile page or showing a dropdown
+  };
+
+  // Define handleLogoutOrSignIn
+  const handleLogoutOrSignIn = () => {
+    if (isLoggedIn) {
+      setIsLoggedIn(false); // Log out the user
+    } else {
+      // Redirect to login or open login modal
+      console.log("Sign In");
+    }
+  };
 
   // Handle Year Change
   const handleYearChange = (e) => {
@@ -69,12 +86,12 @@ export default function Home() {
       <header className="header">
         <div className="left-section">
           <a href="https://imgbb.com/">
-          <img 
-            src="https://i.ibb.co/X5849y8/hbslogo.png" 
-            alt="Hobbies Sync Logo" 
-            className="logo" 
-            style={{ height: '40px', width: 'auto', }} // Adjust size as needed
-          />
+            <img 
+              src="https://i.ibb.co/X5849y8/hbslogo.png" 
+              alt="Hobbies Sync Logo" 
+              className="logo" 
+              style={{ height: '40px', width: 'auto' }} // Adjust size as needed
+            />
           </a>
           <div className="menu-section">
             {/* Menu Dropdowns */}
