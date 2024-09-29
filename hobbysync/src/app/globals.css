@@ -6,7 +6,8 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-}
+
+
 
 .header {
   display: flex;
@@ -65,6 +66,7 @@ body {
   height: 40px;
 }
 
+
 .dropdown-content {
   display: none;
   position: absolute;
@@ -115,6 +117,8 @@ body {
 .dropdown:focus-within .dropdown-contentp {
   display: block;
 }
+
 .arrow {
   margin-left: 5px;
+}
 }
