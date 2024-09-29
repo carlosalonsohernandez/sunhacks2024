@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 //save at merge
-const TaskPopup = ({ onClose, onSave, taskData = {}, fetchHobbies }) => {
+const TaskPopup = ({ onClose, onSave, taskData = {}, fetchHobbies, currentUser }) => {
   const [taskName, setTaskName] = useState(taskData.taskName || '');
   const [startDate, setStartDate] = useState(taskData.startDate || '');
   const [endDate, setEndDate] = useState(taskData.endDate || '');

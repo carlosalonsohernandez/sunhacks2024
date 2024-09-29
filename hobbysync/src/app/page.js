@@ -305,11 +305,12 @@ const handleSaveHobby = (newHobby) => {
 
           {/* Task Popup */}
           {isTaskPopupOpen && (
-            <TaskPopup
-              onClose={closeTaskPopup}
-              onSave={handleSaveTask}
-              taskData={taskToEditIndex !== null ? tasks[taskToEditIndex] : {}}
-            />
+          <TaskPopup
+            onClose={closeTaskPopup}
+            onSave={handleSaveTask}
+            taskData={taskToEditIndex !== null ? tasks[taskToEditIndex] : {}}
+            currentUser={currentUser}  // Pass currentUser here
+          />
           )}
 
           {/* Hobby Popup */}
