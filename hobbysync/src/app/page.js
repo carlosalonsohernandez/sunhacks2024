@@ -11,18 +11,12 @@ export default function Home() {
   const [month, setMonth] = useState(new Date().getMonth());
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
-
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
+  const [isLoginOpen, setIsLoginOpen] = useState(false); // Track login modal visibility
+  const [loginError, setLoginError] = useState(null); // Track login errors
+  const [loginData, setLoginData] = useState({ email: '', password: '' }); // Login form data
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [taskToEditIndex, setTaskToEditIndex] = useState(null); // Track which task is being edited
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Add this to track login status
-
-  // Define handleProfileClick
-  const handleProfileClick = () => {
-    console.log("Profile clicked");
-    // Add logic for navigating to the profile page or showing a dropdown
-  };
-
-  // Define handleLogoutOrSignIn
-
 
   // Handle Year Change
   const handleYearChange = (e) => {
@@ -32,15 +26,52 @@ export default function Home() {
     setYear(value);
   }
 
-  const [isLoginOpen, setIsLoginOpen] = useState(false); 
-  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const handleLoginChange = (e) => {
+    setLoginData({ ...loginData, [e.target.name]: e.target.value });
+  };
 
-  // Handle login
-  const handleLogin = (userData) => {
-    localStorage.setItem('user', JSON.stringify(userData)); // Save user in localStorage
-    setIsLoggedIn(true); // Update login state
+  const handleProfileClick = () => {
+    if (!isLoggedIn) {
+      setIsLoginOpen(true); // Open login modal when not logged in
+    } else {
+      // Handle profile-related actions for logged-in users
+    }
+  };
+  const closeLogin = () => {
     setIsLoginOpen(false); // Close login modal
+  };
+  const handleLogoutOrSignIn = () => {
+    if (isLoggedIn) {
+      setIsLoggedIn(false); // Log out action
+    } else {
+      setIsLoginOpen(true); // Open login modal
+    }
+  };
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoginError(null); // Clear previous errors
+    try {
+      const response = await fetch('http://localhost:8000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(loginData),
+      });
+      if (response.ok) {
+        const result = await response.json();
+        setIsLoggedIn(true); // Successfully logged in
+        setIsLoginOpen(false); // Close login modal
+        console.log('Login successful:', result);
+      } else {
+        const errorData = await response.json();
+        setLoginError(errorData.message || 'Login failed'); // Set error message
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setLoginError('Login error. Please try again.'); // Handle network errors
+    }
   };
 
   // Handle register
@@ -50,15 +81,6 @@ export default function Home() {
     setIsRegisterOpen(false); // Close register modal
   };
 
-  // Handle logging out
-  const handleLogoutOrSignIn = () => {
-    if (isLoggedIn) {
-      localStorage.removeItem('user'); // Clear localStorage on logout
-      setIsLoggedIn(false); 
-    } else {
-      setIsLoginOpen(true); 
-    }
-  };
 
   const handleMonthChange = (e) => {
     let value = parseInt(e.target.value);
@@ -79,7 +101,7 @@ export default function Home() {
   };
 
   // Save a new task or update an existing one
-  const handleSaveTask = (taskData) => {
+  const handleSaveTask = async (taskData) => {
 
     if (taskToEditIndex !== null) {
       // Update the existing task
@@ -90,9 +112,25 @@ export default function Home() {
     } else {
       // Save a new task
       setTasks([...tasks, taskData]);
+      try {
+        const response = await fetch('http://localhost:8000/tasks', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(taskData),
+        });
+        if (response.ok) {
+          const result = await response.json();
+          console.log('Login successful:', result);
+        } else {
+          const errorData = await response.json();
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+      }
       console.log(taskData);
     }
-    setIsPopupOpen(false); // Close the popup after saving
   };
 
   // Open the popup to edit a task
@@ -222,13 +260,74 @@ export default function Home() {
       <Footer />
 
 
-      {/* Login Modal */}
-      {isLoginOpen && (
-        <Login
-          onClose={() => setIsLoginOpen(false)} // Close the login modal
-          onLogin={handleLogin} // Handle successful login
-        />
+ {/* Conditional rendering of the login modal */}
+ {isLoginOpen && (
+        <div className="login-modal">
+          <div className="modal-content">
+            <h2>Login</h2>
+            {loginError && <p className="error-message">{loginError}</p>} {/* Display login errors */}
+            <form onSubmit={handleLogin}>
+              <div>
+                <label>Email:</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={loginData.email}
+                  onChange={handleLoginChange}
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
+              <div>
+                <label>Password:</label>
+                <input
+                  type="password"
+                  name="password"
+                  value={loginData.password}
+                  onChange={handleLoginChange}
+                  placeholder="Enter your password"
+                  required
+                />
+              </div>
+              <button type="submit">Login</button>
+              <button type="button" onClick={closeLogin}>Cancel</button>
+            </form>
+          </div>
+        </div>
       )}
+      {/* Simple CSS to style the modal */}
+      <style jsx>{`
+        .login-modal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+          background: white;
+          padding: 20px;
+          border-radius: 5px;
+          text-align: center;
+          box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .modal-content form {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .modal-content button {
+          margin-top: 10px;
+        }
+        .error-message {
+          color: red;
+          font-weight: bold;
+        }
+      `}</style>
 
       {/* Register Modal */}
       {isRegisterOpen && (
