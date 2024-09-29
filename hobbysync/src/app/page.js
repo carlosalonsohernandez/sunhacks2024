@@ -5,6 +5,7 @@ import Calendar from './components/Calendar.js';
 import TaskPopup from './components/TaskPopUp.js'; 
 import Register from './components/Register.js'; 
 import Login from './components/Login.js'; // Import the new Login component
+import axios from "axios"
 
 export default function Home() {
   const [year, setYear] = useState(new Date().getFullYear());
@@ -36,6 +37,7 @@ export default function Home() {
   // Handle login
   const handleLogin = (userData) => {
     localStorage.setItem('user', JSON.stringify(userData)); // Save user in localStorage
+    axios.post('http://localhost:8000/login', userData)
     setIsLoggedIn(true); // Update login state
     setIsLoginOpen(false); // Close login modal
   };
@@ -43,6 +45,7 @@ export default function Home() {
   // Handle register
   const handleRegister = (userData) => {
     localStorage.setItem('user', JSON.stringify(userData)); // Save user in localStorage
+    axios.post('http://localhost:8000/register', userData)
     setIsLoggedIn(true);
     setIsRegisterOpen(false); // Close register modal
   };
