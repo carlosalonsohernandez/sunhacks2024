@@ -99,7 +99,14 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <header className="header">
         <div className="left-section">
-          <div className="title">Hobbies Sync</div>
+          <a href="https://imgbb.com/">
+          <img 
+            src="https://i.ibb.co/X5849y8/hbslogo.png" 
+            alt="Hobbies Sync Logo" 
+            className="logo" 
+            style={{ height: '40px', width: 'auto', }} // Adjust size as needed
+          />
+          </a>
           <div className="menu-section">
             {/* Menu Dropdowns */}
             <div className="dropdown menu-dropdown">
