@@ -79,20 +79,6 @@ export default function Home() {
             Add Task
           </button>
 
-          {/* Render saved tasks as clickable tags */}
-          <div className="flex flex-wrap gap-2 mt-6">
-            {tasks.map((task, index) => (
-              <div
-                key={index}
-                className="py-1 px-3 mb-2 border border-gray-300 rounded-full cursor-pointer text-xs"
-                style={{ backgroundColor: task.color }}
-                onClick={() => handleEditTask(index)}
-              >
-                <span>{truncateTaskName(task.taskName || 'Unnamed')}</span>
-              </div>
-            ))}
-          </div>
-
           {/* Task Popup */}
           {isPopupOpen && (
             <TaskPopup
@@ -147,8 +133,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Render Calendar component */}
-          <Calendar year={year} month={month} />
+          {/* Render Calendar component with tasks */}
+          <Calendar year={year} month={month} tasks={tasks} onEditTask={handleEditTask} />
         </div>
       </main>
 
