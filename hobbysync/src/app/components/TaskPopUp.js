@@ -1,23 +1,33 @@
-// components/TaskPopup.js
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-const TaskPopup = ({ onClose, onSave }) => {
-  const [taskName, setTaskName] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [time, setTime] = useState('');
-  const [color, setColor] = useState('#000000');
-  const [notes, setNotes] = useState('');
-  const [repeatFrequency, setRepeatFrequency] = useState('None');
-
+const TaskPopup = ({ onClose, onSave, taskData = {} }) => {
+  const [taskName, setTaskName] = useState(taskData.taskName || '');
+  const [startDate, setStartDate] = useState(taskData.startDate || '');
+  const [endDate, setEndDate] = useState(taskData.endDate || '');
+  const [time, setTime] = useState(taskData.time || '');
+  const [color, setColor] = useState(taskData.color || '#FF0000'); // Default color (Red)
+  const [notes, setNotes] = useState(taskData.notes || '');
+  const [repeatFrequency, setRepeatFrequency] = useState(taskData.repeatFrequency || 'None');
   const [isVisible, setIsVisible] = useState(false);
+  const [isColorDropdownOpen, setIsColorDropdownOpen] = useState(false); // Controls color dropdown visibility
+
+  const colors = [
+    { value: '#FF0000', name: 'Red' },
+    { value: '#00FF00', name: 'Green' },
+    { value: '#0000FF', name: 'Blue' },
+    { value: '#FFFF00', name: 'Yellow' },
+    { value: '#FF00FF', name: 'Magenta' },
+    { value: '#00FFFF', name: 'Cyan' },
+  ];
+
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
   const handleSave = () => {
-    const taskData = {
+    const task = {
       taskName,
       startDate,
       endDate,
@@ -26,9 +36,39 @@ const TaskPopup = ({ onClose, onSave }) => {
       notes,
       repeatFrequency,
     };
-    onSave(taskData);
+    onSave(task);
     onClose();
   };
+
+  // Toggle the color dropdown
+  const toggleColorDropdown = () => {
+    setIsColorDropdownOpen((prevState) => !prevState);
+  };
+
+  // Handle color selection and close the dropdown
+  const handleColorSelect = (selectedColor) => {
+    setColor(selectedColor); // Set the selected color
+    setIsColorDropdownOpen(true); // Close the dropdown after color selection
+  };
+
+  // Close dropdown if clicked outside
+  const handleOutsideClick = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setIsColorDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isColorDropdownOpen) {
+      document.addEventListener('click', handleOutsideClick);
+    } else {
+      document.removeEventListener('click', handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleOutsideClick);
+    };
+  }, [isColorDropdownOpen]);
 
   return (
     <div
@@ -37,7 +77,7 @@ const TaskPopup = ({ onClose, onSave }) => {
       <div
         className={`bg-white w-[700px] h-[550px] p-6 rounded-lg shadow-lg transform transition-all duration-500 ${isVisible ? 'scale-100' : 'scale-75'}`}
       >
-        <h2 className="text-2xl font-bold mb-4">Add New Task</h2>
+        <h2 className="text-2xl font-bold mb-4">{taskData.taskName ? 'Edit Task' : 'Add New Task'}</h2>
 
         {/* Task Name, Start Date, and End Date in a Single Line */}
         <div className="flex space-x-4 mb-4">
@@ -81,15 +121,39 @@ const TaskPopup = ({ onClose, onSave }) => {
               className="w-full mt-1 p-2 border border-gray-300 rounded"
             />
           </label>
-          <label className="w-1/4">
+
+          {/* Custom Color Dropdown */}
+          <label className="w-1/4 relative dropdown" ref={dropdownRef}>
             Color:
-            <input
-              type="color"
-              value={color}
-              onChange={(e) => setColor(e.target.value)}
-              className="w-full h-10 p-1 border border-gray-300 rounded"
-            />
+            <button
+              className="w-full mt-1 p-2 border border-gray-300 rounded flex items-center justify-between"
+              onClick={toggleColorDropdown}
+            >
+              <span>{colors.find((c) => c.value === color)?.name}</span>
+              <span
+                className="inline-block w-4 h-4 rounded-full ml-2"
+                style={{ backgroundColor: color }}
+              ></span>
+            </button>
+            {isColorDropdownOpen && (
+              <ul className="absolute left-0 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                {colors.map((colorOption) => (
+                  <li
+                    key={colorOption.value}
+                    className="p-2 hover:bg-gray-100 flex items-center justify-between cursor-pointer"
+                    onClick={() => handleColorSelect(colorOption.value)}
+                  >
+                    <span>{colorOption.name}</span>
+                    <span
+                      className="inline-block w-4 h-4 rounded-full ml-2"
+                      style={{ backgroundColor: colorOption.value }}
+                    ></span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </label>
+
           <label className="w-1/3">
             Repetition:
             <select
@@ -111,7 +175,7 @@ const TaskPopup = ({ onClose, onSave }) => {
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="w-full mt-1 p-2 border border-gray-300 rounded h-40 resize-none" // Add resize-none class here
+            className="w-full mt-1 p-2 border border-gray-300 rounded h-40 resize-none"
           />
         </label>
 
@@ -119,7 +183,7 @@ const TaskPopup = ({ onClose, onSave }) => {
         <div className="flex justify-end space-x-4">
           <button
             onClick={onClose}
-            className="px-4 py-2 border border-gray-300 rounded text-gray-600"
+            className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded"
           >
             Cancel
           </button>

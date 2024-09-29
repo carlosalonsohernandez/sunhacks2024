@@ -1,8 +1,12 @@
-// components/InteractiveBlock.js
-"use client"; // Ensure it's a Client Component for using useState
-import { useState } from "react";
+"use client";
 
-const Calendar = ({ year, month }) => {
+const Calendar = ({ year, month, tasks, onEditTask }) => {
+  // List of month names to convert the month index to the correct name
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
   // Calculate the number of days in the given month and year
   const getDaysInMonth = (year, month) => {
     return new Date(year, month + 1, 0).getDate();
@@ -16,10 +20,18 @@ const Calendar = ({ year, month }) => {
   // Create an array of numbers representing each day of the month
   const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
+  // Filter tasks that fall within the displayed month
+  const getTasksForDay = (day) => {
+    return tasks.filter(task => {
+      const taskDate = new Date(task.startDate); // Adjust based on task data
+      return taskDate.getFullYear() === year && taskDate.getMonth() === month && taskDate.getDate() === day;
+    });
+  };
+
   return (
     <div className="ml-9">
       {/* Weekday Headers */}
-      <div className="grid grid-cols-7 gap-0">
+      <div className="grid grid-cols-7 gap-0 border-black border-2 border-solid">
         <div>Sunday</div>
         <div>Monday</div>
         <div>Tuesday</div>
@@ -30,15 +42,30 @@ const Calendar = ({ year, month }) => {
       </div>
 
       {/* Days in Month */}
-      <div className="grid grid-cols-7 auto-rows-auto gap-5 mt-2">
+      <div className="grid grid-cols-7 auto-rows-auto gap-2 mt-4">
         {/* Empty divs to align the first day correctly */}
         {Array.from({ length: firstDayOfWeek }).map((_, index) => (
-          <div key={`empty-${index}`}></div>
+          <div className="border-black-300 border-2 border-solid w-24 md:w-auto h-24 min-h-0 md:min-h-full" key={`empty-${index}`} ></div>
         ))}
         
         {/* Render the actual days of the month */}
         {daysArray.map((day) => (
-          <div key={day}>{day}</div>
+          <div key={day} className="border-black border-2 border-solid w-24 md:w-auto h-24 min-h-0 md:min-h-full relative">
+            <span>{day}</span>
+            {/* Render task tags inside the day cell */}
+            <div className="flex flex-wrap gap-1 mt-2">
+              {getTasksForDay(day).map((task, index) => (
+                <div
+                  key={index}
+                  className="py-1 px-2 bg-white border border-gray-300 rounded-full text-xs truncate cursor-pointer"
+                  style={{ backgroundColor: task.color }}
+                  onClick={() => onEditTask(tasks.indexOf(task))} // Trigger editing on click
+                >
+                  {task.taskName.length > 6 ? `${task.taskName.slice(0, 6)}...` : task.taskName}
+                </div>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
     </div>
