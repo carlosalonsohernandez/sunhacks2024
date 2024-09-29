@@ -10,6 +10,23 @@ export default function Home() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [taskToEditIndex, setTaskToEditIndex] = useState(null); // Track which task is being edited
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Add this to track login status
+
+  // Define handleProfileClick
+  const handleProfileClick = () => {
+    console.log("Profile clicked");
+    // Add logic for navigating to the profile page or showing a dropdown
+  };
+
+  // Define handleLogoutOrSignIn
+  const handleLogoutOrSignIn = () => {
+    if (isLoggedIn) {
+      setIsLoggedIn(false); // Log out the user
+    } else {
+      // Redirect to login or open login modal
+      console.log("Sign In");
+    }
+  };
 
   // Handle Year Change
   const handleYearChange = (e) => {
@@ -68,7 +85,39 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <header className="header">
         <div className="left-section">
-          <div className="title">Hobbies Sync</div>
+          <a href="https://imgbb.com/">
+            <img 
+              src="https://i.ibb.co/X5849y8/hbslogo.png" 
+              alt="Hobbies Sync Logo" 
+              className="logo" 
+              style={{ height: '40px', width: 'auto' }} // Adjust size as needed
+            />
+          </a>
+          <div className="menu-section">
+            {/* Menu Dropdowns */}
+            <div className="dropdown menu-dropdown">
+              <button className="dropbtn">
+                Menu <i className="arrow down"></i>
+              </button>
+              <div className="dropdown-content">
+                <a href="#home">Home</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="dropdown profile-dropdown">
+          <button className="dropbtnp">
+            <img src="https://via.placeholder.com/40" alt="Profile Icon" className="profile-icon" />
+          </button>
+          <div className="dropdown-contentp">
+            <a href="#profile" onClick={handleProfileClick}>Profile</a>
+            <a href="#settings">Settings</a>
+            <a href="#login-logout" onClick={handleLogoutOrSignIn}>
+              {isLoggedIn ? 'Logout' : 'Sign In'}
+            </a>
+          </div>
         </div>
       </header>
 
