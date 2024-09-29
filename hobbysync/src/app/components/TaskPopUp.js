@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const TaskPopup = ({ onClose, onSave, taskData = {} }) => {
   const [taskName, setTaskName] = useState(taskData.taskName || '');
@@ -19,6 +19,8 @@ const TaskPopup = ({ onClose, onSave, taskData = {} }) => {
     { value: '#FF00FF', name: 'Magenta' },
     { value: '#00FFFF', name: 'Cyan' },
   ];
+
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     setIsVisible(true);
@@ -46,12 +48,12 @@ const TaskPopup = ({ onClose, onSave, taskData = {} }) => {
   // Handle color selection and close the dropdown
   const handleColorSelect = (selectedColor) => {
     setColor(selectedColor); // Set the selected color
-    setIsColorDropdownOpen(false); // Close the dropdown after color selection
+    setIsColorDropdownOpen(true); // Close the dropdown after color selection
   };
 
   // Close dropdown if clicked outside
   const handleOutsideClick = (event) => {
-    if (!event.target.closest('.dropdown')) {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setIsColorDropdownOpen(false);
     }
   };
@@ -121,7 +123,7 @@ const TaskPopup = ({ onClose, onSave, taskData = {} }) => {
           </label>
 
           {/* Custom Color Dropdown */}
-          <label className="w-1/4 relative dropdown">
+          <label className="w-1/4 relative dropdown" ref={dropdownRef}>
             Color:
             <button
               className="w-full mt-1 p-2 border border-gray-300 rounded flex items-center justify-between"
