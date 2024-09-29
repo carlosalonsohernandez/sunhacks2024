@@ -219,37 +219,44 @@ export default function Home() {
     setIsHobbyPopupOpen(false);
   };
 
-  // Save a new hobby
-const handleSaveHobby = (newHobby) => {
-  // Save the new hobby
-  setHobbies([...hobbies, newHobby]);
-
-  const saveHobby = async () => {
-    try {
-      console.log(newHobby);
-      const response = await fetch('http://localhost:8000/hobbies', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newHobby),
-      });
-      if (response.ok) {
-        const result = await response.json();
-        console.log('Hobby saved successfully:', result);
-        console.log(newHobby);
-      } else {
-        const errorData = await response.json();
-        console.error('Error saving hobby:', errorData);
-      }
-    } catch (error) {
-      console.error('Save hobby error:', error);
+  const handleSaveHobby = (newHobby) => {
+    // Check if the user is logged in and currentUser is available
+    if (!currentUser || !currentUser.userId) {
+      console.error('User is not logged in. Cannot associate hobby.');
+      return;
     }
+  
+    // Add the userId to the new hobby
+    const hobbyWithUser = { ...newHobby, userId: currentUser.userId };
+  
+    // Save the new hobby
+    setHobbies([...hobbies, hobbyWithUser]);
+  
+    const saveHobby = async () => {
+      try {
+        console.log(hobbyWithUser);
+        const response = await fetch('http://localhost:8000/hobbies', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(hobbyWithUser),
+        });
+        if (response.ok) {
+          const result = await response.json();
+          console.log('Hobby saved successfully:', result);
+          console.log(hobbyWithUser);
+        } else {
+          const errorData = await response.json();
+          console.error('Error saving hobby:', errorData);
+        }
+      } catch (error) {
+        console.error('Save hobby error:', error);
+      }
+    };
+  
+    saveHobby();
   };
-
-  // Call saveHobby
-  saveHobby();
-};
 
   return (
     <div className="flex flex-col min-h-screen">
