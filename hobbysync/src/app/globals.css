@@ -10,28 +10,32 @@ body {
 
 .header {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* Space between left and right sections */
   align-items: center;
   background-color: #336394;
   padding: 10px 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
+.left-section {
+  display: flex;
+  align-items: center;
 }
 
 .title {
   font-size: 24px;
   font-weight: bold;
-}
-
-.profile-dropdown {
-  position: relative;
+  margin-right: 20px; /* Adjust margin to bring buttons closer */
 }
 
 .menu-section {
   display: flex;
-  gap: 15px;
-  padding: 20px;
+  gap: 10px; /* Reduced gap to bring buttons closer together */
   align-items: center;
+}
+
+.profile-dropdown {
+  position: relative;
 }
 
 .menu-dropdown,
@@ -39,24 +43,20 @@ body {
   position: relative;
 }
 
-.dropbtn {
+.dropbtn,
+.dropbtnp {
   background: #333;
   border: none;
   color: white;
   cursor: pointer;
   font-size: 16px;
-  padding: 10px 20px;
+  padding: 8px 16px; /* Reduced padding to make buttons smaller */
   border-radius: 4px;
 }
 
 .dropbtnp {
   background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  font-size: 16px;
-  padding: 10px 20px;
-  border-radius: 4px;
+  padding: 0; /* No padding to keep the profile button compact */
 }
 
 .profile-icon {
@@ -68,7 +68,16 @@ body {
 .dropdown-content {
   display: none;
   position: absolute;
-  left: 0;
+  background-color: #ffffff;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  min-width: 150px;
+}
+
+.dropdown-contentp {
+  display: none;
+  position: absolute;
+  right: 0; /* Align dropdown content to the right of the button */
   background-color: #ffffff;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   z-index: 1;
@@ -91,6 +100,21 @@ body {
   display: block;
 }
 
+.dropdown-contentp a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-contentp a:hover {
+  background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropdown-contentp,
+.dropdown:focus-within .dropdown-contentp {
+  display: block;
+}
 .arrow {
   margin-left: 5px;
 }

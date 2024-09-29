@@ -4,7 +4,46 @@ export default function Home() {
   return (
     <div>
       <header className="header">
-        <div className="title">Habit Sync</div>
+        <div className="left-section">
+          <div className="title">Habit Sync</div>
+
+          {/* Menu section next to title */}
+          <div className="menu-section">
+            <div className="dropdown menu-dropdown">
+              <button className="dropbtn">
+                Menu <i className="arrow down"></i>
+              </button>
+              <div className="dropdown-content">
+                <a href="#home">Home</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+              </div>
+            </div>
+
+            <div className="dropdown menu-dropdown">
+              <button className="dropbtn">
+                Extra <i className="arrow down"></i>
+              </button>
+              <div className="dropdown-content">
+                <a href="#home">This</a>
+                <a href="#about">Is</a>
+                <a href="#contact">Something</a>
+              </div>
+            </div>
+
+            <div className="dropdown menu-dropdown">
+              <button className="dropbtn">
+                Extra <i className="arrow down"></i>
+              </button>
+              <div className="dropdown-content">
+                <a href="#home">This</a>
+                <a href="#about">Is</a>
+                <a href="#contact">Something</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="dropdown profile-dropdown">
           <button className="dropbtnp">
             <img
@@ -13,7 +52,7 @@ export default function Home() {
               className="profile-icon"
             />
           </button>
-          <div className="dropdown-content">
+          <div className="dropdown-contentp">
             <a href="#profile">Profile</a>
             <a href="#settings">Settings</a>
             <a href="#logout">Logout</a>
@@ -21,34 +60,7 @@ export default function Home() {
         </div>
       </header>
 
-      <main>
-        {/* New section below the header containing menu buttons */}
-        <div className="menu-section">
-          
-          <div className="dropdown menu-dropdown">
-            <button className="dropbtn">
-              Menu <i className="arrow down"></i>
-            </button>
-            <div className="dropdown-content">
-              <a href="#home">Home</a>
-              <a href="#about">About</a>
-              <a href="#contact">Contact</a>
-            </div>
-          </div>
-
-          <div className="dropdown menu-dropdown">
-            <button className="dropbtn">
-              Extra <i className="arrow down"></i>
-            </button>
-            <div className="dropdown-content">
-              <a href="#home">This</a>
-              <a href="#about">Is</a>
-              <a href="#contact">Something</a>
-            </div>
-          </div>
-
-        </div>
-      </main>
+      <main></main>
     </div>
   );
 }
