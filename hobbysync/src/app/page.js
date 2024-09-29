@@ -22,6 +22,7 @@ export default function Home() {
   const [loginData, setLoginData] = useState({ email: '', password: '' }); // Login form data
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [taskToEditIndex, setTaskToEditIndex] = useState(null); // Track which task is being edited
+  const [hobbyToEditIndex, setHobbyToEditIndex] = useState(null); // Track which hobby is being edited
 
   const [currentUser, setCurrentUser] = useState(null); // State to store current user
 
@@ -56,10 +57,10 @@ export default function Home() {
         setIsLoggedIn(true); // Successfully logged in
         setIsLoginOpen(false); // Close login modal
         console.log('Login successful:', result);
-        user = {
+        const user = {
           "userId" : result.userId,
-          "email" : login.email,
-          "password" : login.password,
+          "email" : loginData.email,
+          "password" : loginData.password,
           "username" : result.username,
           "age" : result.age
         }
@@ -162,27 +163,28 @@ export default function Home() {
     } else {
       // Save a new task
       setTasks([...tasks, taskData]);
-      const saveTask = async () => {
-        try {
-          const response = await fetch('http://localhost:8000/tasks', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(taskData),
-          });
-          if (response.ok) {
-            const result = await response.json();
-            console.log('Login successful:', result);
-          } else {
-            const errorData = await response.json();
-          }
-        } catch (error) {
-          console.error('Login error:', error);
-        }
-      };
-      saveTask();
-      console.log(taskData);
+      //const saveTask = async () => {
+        //try {
+         // const response = await fetch('http://localhost:8000/tasks', {
+          //  method: 'POST',
+           // headers: {
+            //  'Content-Type': 'application/json',
+            //},
+            //body: JSON.stringify(taskData),
+          //});
+          //if (response.ok) {
+            //const result = await response.json();
+            //console.log('Login successful:', result);
+          //} else {
+           // const errorData = await response.json();
+          //}
+        //} catch (error) {
+          //console.error('Login error:', error);
+        //}
+      //};
+      //saveTask();
+      
+      //console.log(taskData);
     }
   };
 
@@ -208,10 +210,36 @@ export default function Home() {
   };
 
   // Save a new hobby
-  const handleSaveHobby = (newHobby) => {
-    setHobbies([...hobbies, newHobby]);
-    setIsHobbyPopupOpen(false); 
+const handleSaveHobby = (newHobby) => {
+  // Save the new hobby
+  setHobbies([...hobbies, newHobby]);
+
+  const saveHobby = async () => {
+    try {
+      console.log(newHobby);
+      const response = await fetch('http://localhost:8000/hobbies', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newHobby),
+      });
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Hobby saved successfully:', result);
+        console.log(newHobby);
+      } else {
+        const errorData = await response.json();
+        console.error('Error saving hobby:', errorData);
+      }
+    } catch (error) {
+      console.error('Save hobby error:', error);
+    }
   };
+
+  // Call saveHobby
+  saveHobby();
+};
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -257,11 +285,11 @@ export default function Home() {
 
       <main className="flex-grow">
         <div className="container mx-auto px-4 pb-4">
-          <button onClick={openTaskPopup} className="px-4 py-2 bg-green-500 text-white rounded absolute right-4">
+          <button onClick={openTaskPopup} className="px-3 py-3 bg-green-500 text-white rounded absolute right-4">
             Add Task
           </button>
 
-          <button onClick={openHobbyPopup} className="px-4 py-2 bg-blue-500 text-white rounded absolute right-28">
+          <button onClick={openHobbyPopup} className="px-3 py-3 bg-blue-500 text-white rounded absolute right-28">
             Add Hobby
           </button>
 
