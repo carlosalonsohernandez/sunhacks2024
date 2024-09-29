@@ -1,76 +1,50 @@
 "use client";
-import Footer from './components/Footer.js';
-<<<<<<< Updated upstream
-import Calendar from './components/Calendar.js'; // Ensure this is correctly imported
 import { useState } from 'react';
-import TaskPopup from './components/TaskPopUp.js'; // Ensure the correct import
-=======
+import Footer from './components/Footer.js';
 import Calendar from './components/Calendar.js'; 
 import TaskPopup from './components/TaskPopUp.js'; 
 import Register from './components/Register.js'; 
-import Login from './components/Login.js'; // Import the new Login component
-import HobbyPopup from './components/HobbyPopUp.js'; // Import HobbyPopup component
->>>>>>> Stashed changes
+import Login from './components/Login.js'; 
+import HobbyPopup from './components/HobbyPopUp.js'; 
 
 export default function Home() {
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth());
   const [isTaskPopupOpen, setIsTaskPopupOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
-  const [taskToEditIndex, setTaskToEditIndex] = useState(null); // Track which task is being edited
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Add this to track login status
+  const [taskToEditIndex, setTaskToEditIndex] = useState(null); 
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
 
   // Hobby state
-  const [isHobbyPopupOpen, setIsHobbyPopupOpen] = useState(false); // Track hobby popup visibility
-  const [hobbies, setHobbies] = useState([]); // Store list of hobbies
+  const [isHobbyPopupOpen, setIsHobbyPopupOpen] = useState(false); 
+  const [hobbies, setHobbies] = useState([]); 
 
-  // Define handleProfileClick
+  // Handle Profile Click
   const handleProfileClick = () => {
     console.log("Profile clicked");
   };
 
-<<<<<<< Updated upstream
-  // Define handleLogoutOrSignIn
-  const handleLogoutOrSignIn = () => {
-    if (isLoggedIn) {
-      setIsLoggedIn(false); // Log out the user
-    } else {
-      // Redirect to login or open login modal
-      console.log("Sign In");
-    }
-  };
-
-  // Handle Year Change
-  const handleYearChange = (e) => {
-    let value = parseInt(e.target.value);
-    if (value > 2025) value = 2024;
-    if (value < 2000) value = 2000;
-    setYear(value);
-  };
-
-  // Handle Month Change
-=======
   const [isLoginOpen, setIsLoginOpen] = useState(false); 
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
   // Handle login
   const handleLogin = (userData) => {
-    localStorage.setItem('user', JSON.stringify(userData)); // Save user in localStorage
-    setIsLoggedIn(true); // Update login state
-    setIsLoginOpen(false); // Close login modal
+    localStorage.setItem('user', JSON.stringify(userData)); 
+    setIsLoggedIn(true); 
+    setIsLoginOpen(false); 
   };
 
   // Handle register
   const handleRegister = (userData) => {
-    localStorage.setItem('user', JSON.stringify(userData)); // Save user in localStorage
+    localStorage.setItem('user', JSON.stringify(userData)); 
     setIsLoggedIn(true);
-    setIsRegisterOpen(false); // Close register modal
+    setIsRegisterOpen(false); 
   };
 
   // Handle logging out
   const handleLogoutOrSignIn = () => {
     if (isLoggedIn) {
-      localStorage.removeItem('user'); // Clear localStorage on logout
+      localStorage.removeItem('user'); 
       setIsLoggedIn(false); 
     } else {
       setIsLoginOpen(true); 
@@ -83,9 +57,9 @@ export default function Home() {
     if (value > 2025) value = 2024;
     if (value < 2000) value = 2000;
     setYear(value);
-  }
+  };
 
->>>>>>> Stashed changes
+  // Handle Month Change
   const handleMonthChange = (e) => {
     let value = parseInt(e.target.value);
     if (value > 12) value = 12;
@@ -95,7 +69,7 @@ export default function Home() {
 
   // Open the popup for a new task
   const openTaskPopup = () => {
-    setTaskToEditIndex(null); // New task
+    setTaskToEditIndex(null); 
     setIsTaskPopupOpen(true);
   };
 
@@ -114,20 +88,18 @@ export default function Home() {
     } else {
       setTasks([...tasks, taskData]);
     }
-    setIsTaskPopupOpen(false); // Close the popup after saving
+    setIsTaskPopupOpen(false); 
   };
 
   // Open the popup to edit a task
   const handleEditTask = (index) => {
     setTaskToEditIndex(index);
-    setIsTaskPopupOpen(true); // Open the popup for editing
+    setIsTaskPopupOpen(true); 
   };
 
   // Helper function to truncate the task name
   const truncateTaskName = (name) => {
     return name.length > 6 ? `${name.substring(0, 6)}...` : name;
-<<<<<<< Updated upstream
-=======
   };
 
   // Open the hobby popup
@@ -143,8 +115,7 @@ export default function Home() {
   // Save a new hobby
   const handleSaveHobby = (newHobby) => {
     setHobbies([...hobbies, newHobby]);
-    setIsHobbyPopupOpen(false); // Close the hobby popup after saving
->>>>>>> Stashed changes
+    setIsHobbyPopupOpen(false); 
   };
 
   return (
@@ -160,7 +131,6 @@ export default function Home() {
             />
           </a>
           <div className="menu-section">
-            {/* Menu Dropdowns */}
             <div className="dropdown menu-dropdown">
               <button className="dropbtn">
                 Menu <i className="arrow down"></i>
@@ -183,22 +153,20 @@ export default function Home() {
             <a href="#login-logout" onClick={handleLogoutOrSignIn}>
               {isLoggedIn ? 'Logout' : 'Sign In'}
             </a>
+            {!isLoggedIn && (
+              <a href="#register" onClick={() => setIsRegisterOpen(true)}>Register</a>
+            )}
           </div>
         </div>
       </header>
 
       <main className="flex-grow">
         <div className="container mx-auto px-4 pb-4">
-<<<<<<< Updated upstream
 
-          <button onClick={openPopup} className="px-4 py-2 bg-green-500 text-white rounded absolute right-4">
-=======
           <button onClick={openTaskPopup} className="px-4 py-2 bg-green-500 text-white rounded absolute right-4">
->>>>>>> Stashed changes
             Add Task
           </button>
 
-          {/* Add Hobby Button */}
           <button onClick={openHobbyPopup} className="px-4 py-2 bg-blue-500 text-white rounded absolute right-28">
             Add Hobby
           </button>
@@ -212,15 +180,11 @@ export default function Home() {
             />
           )}
 
-<<<<<<< Updated upstream
-=======
           {/* Hobby Popup */}
           {isHobbyPopupOpen && (
             <HobbyPopup onClose={closeHobbyPopup} onSave={handleSaveHobby} />
           )}
 
->>>>>>> Stashed changes
-          {/* User Inputs for Month and Year */}
           <div className="container mx-auto px-4 pb-4"> 
             <div className="flex gap-4 mb-4">
               {/* Year Dropdown */}
@@ -267,8 +231,6 @@ export default function Home() {
 
           {/* Render Calendar component with tasks */}
           <Calendar year={year} month={month} tasks={tasks} onEditTask={handleEditTask} />
-<<<<<<< Updated upstream
-=======
 
           {/* List of hobbies */}
           <ul className="mt-4">
@@ -278,19 +240,16 @@ export default function Home() {
               </li>
             ))}
           </ul>
->>>>>>> Stashed changes
         </div>
       </main>
 
       <Footer />
-<<<<<<< Updated upstream
-=======
 
       {/* Login Modal */}
       {isLoginOpen && (
         <Login
-          onClose={() => setIsLoginOpen(false)} // Close the login modal
-          onLogin={handleLogin} // Handle successful login
+          onClose={() => setIsLoginOpen(false)} 
+          onLogin={handleLogin} 
         />
       )}
 
@@ -301,7 +260,6 @@ export default function Home() {
           onRegister={handleRegister}
         />
       )}
->>>>>>> Stashed changes
     </div>
   );
 }
