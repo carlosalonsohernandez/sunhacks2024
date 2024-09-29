@@ -29,24 +29,35 @@ const TaskPopup = ({ onClose, onSave, taskData = {}, fetchHobbies }) => {
 
   const dropdownRef = useRef(null);
 
-  // Simulate fetching hobbies from a database (replace this with an actual API call)
-  useEffect(() => {
-    const loadHobbies = async () => {
-      if (fetchHobbies) {
-        const fetchedHobbies = await fetchHobbies(); // Assume fetchHobbies returns a promise
+  const fetchUserHobbies = async (userId) => {
+    const response = await fetch(`http://localhost:8000/hobbies/user/${userId}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch hobbies');
+    }
+    return await response.json(); // Assuming the response returns an array of hobbies
+  };
+
+useEffect(() => {
+  setIsVisible(true);
+  const loadHobbies = async () => {
+    if (currentUser && currentUser.userId) { // Check if user is logged in
+      try {
+        const fetchedHobbies = await fetchUserHobbies(currentUser.userId);
         setHobbies(fetchedHobbies);
-      } else {
-        // Hardcoded hobbies for now, but you will replace this with real data from your database
-        setHobbies(['Reading', 'Painting', 'Cycling', 'Running', 'Gardening']);
+      } catch (error) {
+        console.error('Error fetching hobbies:', error);
+        setHobbies([]); // Optionally clear hobbies on error
       }
-    };
+    } else {
+      // Optionally, set a default value or leave it empty if no user is logged in
+      console.log('nothing');
+      setHobbies([]);
+    }
+  };
 
-    loadHobbies();
-  }, [fetchHobbies]);
+  loadHobbies();
+}, [currentUser]); // Depend on currentUser to re-fetch when it changes
 
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
 
   const handleSave = () => {
     if (!startDate) return; // Ensure start date is required
@@ -64,16 +75,11 @@ const TaskPopup = ({ onClose, onSave, taskData = {}, fetchHobbies }) => {
 
     onSave(task);
   };
-
   return (
-
     <div
-      className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+      className={`fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center ${isVisible ? 'visible' : 'invisible'}`}
     >
-      <div
-        className={`bg-white w-[700px] h-[600px] p-6 rounded-lg shadow-lg transform transition-all duration-500 ${isVisible ? 'scale-100' : 'scale-75'}`}
-      >
-
+      <div className={`bg-white w-[400px] h-[600px] p-6 rounded-lg shadow-lg transform transition-all duration-500 ${isVisible ? 'scale-100' : 'scale-75'}`}>
         <h2 className="text-2xl font-bold mb-4">{taskData.taskName ? 'Edit Task' : 'Add New Task'}</h2>
 
         {/* Task Form */}
@@ -109,9 +115,7 @@ const TaskPopup = ({ onClose, onSave, taskData = {}, fetchHobbies }) => {
           </label>
         </div>
 
-
         {/* Estimated Time and Associated Hobby */}
-
         <div className="flex space-x-4 mb-4">
           <label className="flex-1">
             Estimated Time (hours):
@@ -123,7 +127,6 @@ const TaskPopup = ({ onClose, onSave, taskData = {}, fetchHobbies }) => {
             />
           </label>
 
-
           {/* Associated Hobby Dropdown */}
           <label className="flex-1">
             Associated Hobby:
@@ -134,8 +137,8 @@ const TaskPopup = ({ onClose, onSave, taskData = {}, fetchHobbies }) => {
             >
               <option value="" disabled>Select Hobby</option>
               {hobbies.map((hobby, index) => (
-                <option key={index} value={hobby}>
-                  {hobby}
+                <option key={index} value={hobby._id}> {/* Use hobby._id if it's an object */}
+                  {hobby.name} {/* Adjust according to your hobby object structure */}
                 </option>
               ))}
             </select>
@@ -144,9 +147,7 @@ const TaskPopup = ({ onClose, onSave, taskData = {}, fetchHobbies }) => {
 
         {/* Color and Repetition */}
         <div className="flex space-x-4 mb-4">
-          {/* Custom Color Dropdown */}
-          <label className="w-1/4 relative dropdown" ref={dropdownRef}>
-
+          <label className="w-1/4 relative dropdown">
             Color:
             <button
               className="w-full mt-1 p-2 border border-gray-300 rounded flex items-center justify-between"

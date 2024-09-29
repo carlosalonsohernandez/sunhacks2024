@@ -10,46 +10,46 @@ const HobbyPopup = ({ onClose, onSave, hobbyData = {} }) => {
     setIsVisible(true);
   }, []);
 
-  // const handleSave = async () => {
-  //   // Validation check: Ensure the hobby name is filled
-  //   if (!hobbyName) {
-  //     alert('Please provide a hobby name.');
-  //     return;
-  //   };
+    const handleSave = async () => {
+     // Validation check: Ensure the hobby name is filled
+     if (!hobbyName) {
+       alert('Please provide a hobby name.');
+       return;
+      };
 
-  //   // Create the hobby object
-  //   const hobby = {
-  //     hobbyName,
-  //     difficulty,
-  //     description,
-  //   };
+     // Create the hobby object
+     const hobby = {
+       hobbyName,
+       difficulty,
+       description,
+     };
 
-  //   // Pass the new hobby data to the onSave function
-  //   await onSave(hobby);
-  //   onClose(); // Close the popup after saving
-  // };
+     // Pass the new hobby data to the onSave function
+     await onSave(hobby);
+     onClose(); // Close the popup after saving
+    };
 
-  const handleSaveTask = async (task) => {
-    if (!task.startDate) return; // Ensure start date is required
+  // const handleSaveTask = async (task) => {
+  //   if (!task.startDate) return; // Ensure start date is required
   
-    try {
-      const response = await axios.post('http://localhost:8000/tasks', task);
+  //   try {
+  //     const response = await axios.post('http://localhost:8000/tasks', task);
       
-      if (response.status === 201) {
-        const taskId = response.data._id || response.data.taskId; // Get the task ID
+  //     if (response.status === 201) {
+  //       const taskId = response.data._id || response.data.taskId; // Get the task ID
         
-        const taskWithId = { ...task, taskId }; // Add the task ID to the task object
-        console.log('Saved task:', taskWithId);
+  //       const taskWithId = { ...task, taskId }; // Add the task ID to the task object
+  //       console.log('Saved task:', taskWithId);
         
-        // Assuming onSave is a function prop or a state update function
-        onSave(taskWithId);
-      } else {
-        console.error('Failed to save task:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error saving task:', error);
-    }
-  };
+  //       // Assuming onSave is a function prop or a state update function
+  //       onSave(taskWithId);
+  //     } else {
+  //       console.error('Failed to save task:', response.statusText);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error saving task:', error);
+  //   }
+  // };
 
   return (
     <div
