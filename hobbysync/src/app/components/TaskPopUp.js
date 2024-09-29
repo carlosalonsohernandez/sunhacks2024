@@ -1,5 +1,5 @@
 // components/TaskPopup.js
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const TaskPopup = ({ onClose, onSave }) => {
   const [taskName, setTaskName] = useState('');
@@ -9,6 +9,13 @@ const TaskPopup = ({ onClose, onSave }) => {
   const [color, setColor] = useState('#000000');
   const [notes, setNotes] = useState('');
   const [repeatFrequency, setRepeatFrequency] = useState('None');
+
+  const [isVisible, setIsVisible] = useState(false);
+
+  // Make the popup visible with animation after mounting
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
 
   const handleSave = () => {
     const taskData = {
@@ -25,22 +32,26 @@ const TaskPopup = ({ onClose, onSave }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white w-3/4 h-3/4 p-6 rounded-lg shadow-lg">
+    <div
+      className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+    >
+      <div
+        className={`bg-white w-3/4 h-3/4 p-6 rounded-lg shadow-lg transform transition-all duration-500 ${isVisible ? 'scale-100' : 'scale-75'}`}
+      >
         <h2 className="text-2xl font-bold mb-4">Add New Task</h2>
-        
-        <label className="block mb-2">
-          Task Name:
-          <input
-            type="text"
-            value={taskName}
-            onChange={(e) => setTaskName(e.target.value)}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-          />
-        </label>
-        
+
+        {/* Task Name, Start Date, and End Date in a Single Line */}
         <div className="flex space-x-4 mb-4">
-          <label className="block flex-1">
+          <label className="flex-1">
+            Task Name:
+            <input
+              type="text"
+              value={taskName}
+              onChange={(e) => setTaskName(e.target.value)}
+              className="w-full mt-1 p-2 border border-gray-300 rounded"
+            />
+          </label>
+          <label className="flex-2">
             Start Date:
             <input
               type="date"
@@ -49,7 +60,7 @@ const TaskPopup = ({ onClose, onSave }) => {
               className="w-full mt-1 p-2 border border-gray-300 rounded"
             />
           </label>
-          <label className="block flex-1">
+          <label className="flex-2">
             End Date:
             <input
               type="date"
@@ -59,41 +70,43 @@ const TaskPopup = ({ onClose, onSave }) => {
             />
           </label>
         </div>
-        
-        <label className="block mb-4">
-          Time:
-          <input
-            type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-          />
-        </label>
-        
-        <label className="block mb-4">
-          Color:
-          <input
-            type="color"
-            value={color}
-            onChange={(e) => setColor(e.target.value)}
-            className="w-16 h-10 p-1 border border-gray-300 rounded"
-          />
-        </label>
-        
-        <label className="block mb-4">
-          Repetition:
-          <select
-            value={repeatFrequency}
-            onChange={(e) => setRepeatFrequency(e.target.value)}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-          >
-            <option value="None">None</option>
-            <option value="Daily">Daily</option>
-            <option value="Weekly">Weekly</option>
-            <option value="Monthly">Monthly</option>
-          </select>
-        </label>
-        
+
+        {/* Time, Color, and Repetition in a Single Line */}
+        <div className="flex space-x-4 mb-4">
+          <label className="flex-1">
+            Time:
+            <input
+              type="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              className="w-full mt-1 p-2 border border-gray-300 rounded"
+            />
+          </label>
+          <label className="flex-3">
+            Color:
+            <input
+              type="color"
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+              className="w-full h-10 p-1 border border-gray-300 rounded"
+            />
+          </label>
+          <label className="flex-2">
+            Repetition:
+            <select
+              value={repeatFrequency}
+              onChange={(e) => setRepeatFrequency(e.target.value)}
+              className="w-full mt-1 p-2 border border-gray-300 rounded"
+            >
+              <option value="None">None</option>
+              <option value="Daily">Daily</option>
+              <option value="Weekly">Weekly</option>
+              <option value="Monthly">Monthly</option>
+            </select>
+          </label>
+        </div>
+
+        {/* Notes Input */}
         <label className="block mb-4">
           Notes:
           <textarea
@@ -102,7 +115,8 @@ const TaskPopup = ({ onClose, onSave }) => {
             className="w-full mt-1 p-2 border border-gray-300 rounded h-20"
           />
         </label>
-        
+
+        {/* Buttons */}
         <div className="flex justify-end space-x-4">
           <button
             onClick={onClose}
