@@ -5,8 +5,8 @@ import Calendar from './components/Calendar.js';
 import TaskPopup from './components/TaskPopUp.js'; 
 import Register from './components/Register.js'; 
 import HobbyPopup from './components/HobbyPopUp.js'; 
-import Login from './components/Login.js'; // Import the new Login component
-import axios from "axios"
+import Login from './components/Login.js'; 
+import axios from "axios";
 
 export default function Home() {
   const [year, setYear] = useState(new Date().getFullYear());
@@ -29,17 +29,35 @@ export default function Home() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
   // Handle login
-  const handleLogin = (userData) => {
-    localStorage.setItem('user', JSON.stringify(userData)); 
-    setIsLoggedIn(true); 
-    setIsLoginOpen(false); 
+  const handleLogin = async (userData) => {
+    try {
+      const response = await axios.post('http://localhost:8000/login', userData);
+      if (response.status === 200) {
+        localStorage.setItem('user', JSON.stringify(userData)); 
+        setIsLoggedIn(true); 
+        setIsLoginOpen(false); 
+      } else {
+        console.error('Login failed');
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+    }
   };
 
   // Handle register
-  const handleRegister = (userData) => {
-    localStorage.setItem('user', JSON.stringify(userData)); 
-    setIsLoggedIn(true);
-    setIsRegisterOpen(false); 
+  const handleRegister = async (userData) => {
+    try {
+      const response = await axios.post('http://localhost:8000/register', userData);
+      if (response.status === 200) {
+        localStorage.setItem('user', JSON.stringify(userData)); 
+        setIsLoggedIn(true);
+        setIsRegisterOpen(false); 
+      } else {
+        console.error('Register failed');
+      }
+    } catch (error) {
+      console.error('Error during registration:', error);
+    }
   };
 
   // Handle logging out
@@ -51,12 +69,6 @@ export default function Home() {
       setIsLoginOpen(true); 
     }
   };
-
-
-  const [taskToEditIndex, setTaskToEditIndex] = useState(null); // Track which task is being edited
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
-  const [isLoginOpen, setIsLoginOpen] = useState(false); 
-  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
   // Handle Year Change
   const handleYearChange = (e) => {
@@ -72,32 +84,6 @@ export default function Home() {
     if (value > 12) value = 12;
     if (value < 1) value = 1;
     setMonth(value - 1);
-  };
-
-  // Handle login
-  const handleLogin = (userData) => {
-    localStorage.setItem('user', JSON.stringify(userData)); // Save user in localStorage
-    axios.post('http://localhost:8000/login', userData)
-    setIsLoggedIn(true); // Update login state
-    setIsLoginOpen(false); // Close login modal
-  };
-
-  // Handle register
-  const handleRegister = (userData) => {
-    localStorage.setItem('user', JSON.stringify(userData)); // Save user in localStorage
-    axios.post('http://localhost:8000/register', userData)
-    setIsLoggedIn(true);
-    setIsRegisterOpen(false); // Close register modal
-  };
-
-  // Handle logging out
-  const handleLogoutOrSignIn = () => {
-    if (isLoggedIn) {
-      localStorage.removeItem('user'); // Clear localStorage on logout
-      setIsLoggedIn(false); 
-    } else {
-      setIsLoginOpen(true); 
-    }
   };
 
   // Open the popup for a new task
@@ -116,10 +102,10 @@ export default function Home() {
     const { startDate, endDate, repeatFrequency } = task;
     const recurringDates = [];
     let currentDate = new Date(startDate);
-    const lastDate = endDate ? new Date(endDate) : new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), currentDate.getDate()); // Default to one year if no end date
+    const lastDate = endDate ? new Date(endDate) : new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), currentDate.getDate());
 
     while (currentDate <= lastDate) {
-      recurringDates.push(new Date(currentDate)); // Store the current date
+      recurringDates.push(new Date(currentDate));
       if (repeatFrequency === 'Daily') {
         currentDate.setDate(currentDate.getDate() + 1);
       } else if (repeatFrequency === 'Weekly') {
@@ -127,7 +113,7 @@ export default function Home() {
       } else if (repeatFrequency === 'Monthly') {
         currentDate.setMonth(currentDate.getMonth() + 1);
       } else {
-        break; // No repeat if the frequency is "None"
+        break; 
       }
     }
     return recurringDates;
@@ -137,21 +123,14 @@ export default function Home() {
   const handleSaveTask = (taskData) => {
     const updatedTasks = [...tasks];
     const recurringDates = getRecurringDates(taskData);
+    
     if (taskToEditIndex !== null) {
-      const updatedTasks = tasks.map((task, index) =>
-        index === taskToEditIndex ? taskData : task
-      );
-      setTasks(updatedTasks);
-    } else {
-      setTasks([...tasks, taskData]);
-    }
-    setIsTaskPopupOpen(false); 
       updatedTasks[taskToEditIndex] = { ...taskData, recurringDates };
     } else {
       updatedTasks.push({ ...taskData, recurringDates });
     }
     setTasks(updatedTasks);
-    setIsPopupOpen(false); // Close the popup after saving
+    setIsTaskPopupOpen(false); 
   };
 
   // Open the popup to edit a task
@@ -211,7 +190,7 @@ export default function Home() {
             <img src="https://via.placeholder.com/40" alt="Profile Icon" className="profile-icon" />
           </button>
           <div className="dropdown-contentp">
-            <a href="#profile">Profile</a>
+            <a href="#profile" onClick={handleProfileClick}>Profile</a>
             <a href="#settings">Settings</a>
             <a href="#login-logout" onClick={handleLogoutOrSignIn}>
               {isLoggedIn ? 'Logout' : 'Sign In'}
@@ -225,11 +204,7 @@ export default function Home() {
 
       <main className="flex-grow">
         <div className="container mx-auto px-4 pb-4">
-
           <button onClick={openTaskPopup} className="px-4 py-2 bg-green-500 text-white rounded absolute right-4">
-
-          <button onClick={openPopup} className="px-4 py-2 bg-green-500 text-white rounded absolute right-4">
-
             Add Task
           </button>
 
@@ -308,13 +283,8 @@ export default function Home() {
       {/* Login Modal */}
       {isLoginOpen && (
         <Login
-
           onClose={() => setIsLoginOpen(false)} 
           onLogin={handleLogin} 
-
-          onClose={() => setIsLoginOpen(false)} // Close the login modal
-          onLogin={handleLogin} // Handle successful login
-
         />
       )}
 
@@ -325,7 +295,6 @@ export default function Home() {
           onRegister={handleRegister}
         />
       )}
-
     </div>
   );
 }
