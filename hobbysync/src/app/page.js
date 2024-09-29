@@ -13,16 +13,9 @@ export default function Home() {
   const [tasks, setTasks] = useState([]);
 
   const [taskToEditIndex, setTaskToEditIndex] = useState(null); // Track which task is being edited
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Add this to track login status
-
-  // Define handleProfileClick
-  const handleProfileClick = () => {
-    console.log("Profile clicked");
-    // Add logic for navigating to the profile page or showing a dropdown
-  };
-
-  // Define handleLogoutOrSignIn
-
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
+  const [isLoginOpen, setIsLoginOpen] = useState(false); 
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
   // Handle Year Change
   const handleYearChange = (e) => {
@@ -30,17 +23,21 @@ export default function Home() {
     if (value > 2025) value = 2024;
     if (value < 2000) value = 2000;
     setYear(value);
-  }
+  };
 
-  const [isLoginOpen, setIsLoginOpen] = useState(false); 
-  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  // Handle Month Change
+  const handleMonthChange = (e) => {
+    let value = parseInt(e.target.value);
+    if (value > 12) value = 12;
+    if (value < 1) value = 1;
+    setMonth(value - 1);
+  };
 
   // Handle login
   const handleLogin = (userData) => {
     localStorage.setItem('user', JSON.stringify(userData)); // Save user in localStorage
     setIsLoggedIn(true); // Update login state
     setIsLoginOpen(false); // Close login modal
-
   };
 
   // Handle register
@@ -60,13 +57,6 @@ export default function Home() {
     }
   };
 
-  const handleMonthChange = (e) => {
-    let value = parseInt(e.target.value);
-    if (value > 12) value = 12;
-    if (value < 1) value = 1;
-    setMonth(value - 1);
-  };
-
   // Open the popup for a new task
   const openPopup = () => {
     setTaskToEditIndex(null); // New task
@@ -78,19 +68,38 @@ export default function Home() {
     setIsPopupOpen(false);
   };
 
+  // Helper function to calculate recurring dates based on frequency
+  const getRecurringDates = (task) => {
+    const { startDate, endDate, repeatFrequency } = task;
+    const recurringDates = [];
+    let currentDate = new Date(startDate);
+    const lastDate = endDate ? new Date(endDate) : new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), currentDate.getDate()); // Default to one year if no end date
+
+    while (currentDate <= lastDate) {
+      recurringDates.push(new Date(currentDate)); // Store the current date
+      if (repeatFrequency === 'Daily') {
+        currentDate.setDate(currentDate.getDate() + 1);
+      } else if (repeatFrequency === 'Weekly') {
+        currentDate.setDate(currentDate.getDate() + 7);
+      } else if (repeatFrequency === 'Monthly') {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+      } else {
+        break; // No repeat if the frequency is "None"
+      }
+    }
+    return recurringDates;
+  };
+
   // Save a new task or update an existing one
   const handleSaveTask = (taskData) => {
-
+    const updatedTasks = [...tasks];
+    const recurringDates = getRecurringDates(taskData);
     if (taskToEditIndex !== null) {
-      // Update the existing task
-      const updatedTasks = tasks.map((task, index) =>
-        index === taskToEditIndex ? taskData : task
-      );
-      setTasks(updatedTasks);
+      updatedTasks[taskToEditIndex] = { ...taskData, recurringDates };
     } else {
-      // Save a new task
-      setTasks([...tasks, taskData]);
+      updatedTasks.push({ ...taskData, recurringDates });
     }
+    setTasks(updatedTasks);
     setIsPopupOpen(false); // Close the popup after saving
   };
 
@@ -98,12 +107,6 @@ export default function Home() {
   const handleEditTask = (index) => {
     setTaskToEditIndex(index);
     setIsPopupOpen(true); // Open the popup for editing
-  };
-
-  // Helper function to truncate the task name
-  const truncateTaskName = (name) => {
-    return name.length > 6 ? `${name.substring(0, 6)}...` : name;
-
   };
 
   return (
@@ -149,11 +152,8 @@ export default function Home() {
       </header>
 
       <main className="flex-grow">
-
         <div className="container mx-auto px-4 pb-4">
-
           <button onClick={openPopup} className="px-4 py-2 bg-green-500 text-white rounded absolute right-4">
-
             Add Task
           </button>
 
@@ -166,60 +166,51 @@ export default function Home() {
             />
           )}
 
-
           {/* User Inputs for Month and Year */}
           <div className="container mx-auto px-4 pb-4"> 
             <div className="flex gap-4 mb-4">
-              {/* Year Dropdown */}
-              <div>
-                <label htmlFor="year" className="block text-lg font-medium">
-                  Year:
-                </label>
-                <select
-                  id="year"
-                  value={year}
-                  onChange={handleYearChange}
-                  className="border border-gray-300 p-2 rounded"
-                >
-                  {Array.from({ length: 31 }, (_, i) => i + 2000).map((yr) => (
-                    <option key={yr} value={yr}>
-                      {yr}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <label htmlFor="year" className="block text-lg font-medium">
+                Year:
+              </label>
+              <select
+                id="year"
+                value={year}
+                onChange={handleYearChange}
+                className="border border-gray-300 p-2 rounded"
+              >
+                {Array.from({ length: 31 }, (_, i) => i + 2000).map((yr) => (
+                  <option key={yr} value={yr}>
+                    {yr}
+                  </option>
+                ))}
+              </select>
 
-              {/* Month Dropdown */}
-              <div>
-                <label htmlFor="month" className="block text-lg font-medium">
-                  Month:
-                </label>
-                <select
-                  id="month"
-                  value={month}
-                  onChange={handleMonthChange}
-                  className="border border-gray-300 p-2 rounded"
-                >
-                  {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map(
-                    (monthName, index) => (
-                      <option key={index} value={index}>
-                        {monthName}
-                      </option>
-                    )
-                  )}
-                </select>
-              </div>
+              <label htmlFor="month" className="block text-lg font-medium">
+                Month:
+              </label>
+              <select
+                id="month"
+                value={month}
+                onChange={handleMonthChange}
+                className="border border-gray-300 p-2 rounded"
+              >
+                {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map(
+                  (monthName, index) => (
+                    <option key={index} value={index}>
+                      {monthName}
+                    </option>
+                  )
+                )}
+              </select>
             </div>
           </div>
 
           {/* Render Calendar component with tasks */}
           <Calendar year={year} month={month} tasks={tasks} onEditTask={handleEditTask} />
-
         </div>
       </main>
 
       <Footer />
-
 
       {/* Login Modal */}
       {isLoginOpen && (
