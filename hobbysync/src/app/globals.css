@@ -7,8 +7,6 @@ body {
   margin: 0;
   padding: 0;
 
-
-
 .header {
   display: flex;
   justify-content: space-between; /* Space between left and right sections */
@@ -16,6 +14,7 @@ body {
   background-color: #336394;
   padding: 10px 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
 }
 
 .left-section {
@@ -118,7 +117,13 @@ body {
   display: block;
 }
 
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+} 
 .arrow {
   margin-left: 5px;
 }
 }
+
