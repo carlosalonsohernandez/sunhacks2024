@@ -21,14 +21,6 @@ export default function Home() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [taskToEditIndex, setTaskToEditIndex] = useState(null); // Track which task is being edited
 
-  // Handle Year Change
-  const handleYearChange = (e) => {
-    let value = parseInt(e.target.value);
-    if (value > 2025) value = 2024;
-    if (value < 2000) value = 2000;
-    setYear(value);
-  }
-
   const [currentUser, setCurrentUser] = useState(null); // State to store current user
 
   const handleLoginChange = (e) => {
@@ -44,13 +36,6 @@ export default function Home() {
   };
   const closeLogin = () => {
     setIsLoginOpen(false); // Close login modal
-  };
-  const handleLogoutOrSignIn = () => {
-    if (isLoggedIn) {
-      setIsLoggedIn(false); // Log out action
-    } else {
-      setIsLoginOpen(true); // Open login modal
-    }
   };
 
   const handleLogin = async (e) => {
@@ -175,23 +160,26 @@ export default function Home() {
     } else {
       // Save a new task
       setTasks([...tasks, taskData]);
-      try {
-        const response = await fetch('http://localhost:8000/tasks', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(taskData),
-        });
-        if (response.ok) {
-          const result = await response.json();
-          console.log('Login successful:', result);
-        } else {
-          const errorData = await response.json();
+      const saveTask = async () => {
+        try {
+          const response = await fetch('http://localhost:8000/tasks', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(taskData),
+          });
+          if (response.ok) {
+            const result = await response.json();
+            console.log('Login successful:', result);
+          } else {
+            const errorData = await response.json();
+          }
+        } catch (error) {
+          console.error('Login error:', error);
         }
-      } catch (error) {
-        console.error('Login error:', error);
-      }
+      };
+      saveTask();
       console.log(taskData);
     }
   };
