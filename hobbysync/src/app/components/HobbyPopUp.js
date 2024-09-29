@@ -10,24 +10,24 @@ const HobbyPopup = ({ onClose, onSave, hobbyData = {} }) => {
     setIsVisible(true);
   }, []);
 
-  const handleSave = () => {
-    // Validation check: Ensure the hobby name is filled
-    if (!hobbyName) {
-      alert('Please provide a hobby name.');
-      return;
-    }
+    const handleSave = async () => {
+     // Validation check: Ensure the hobby name is filled
+     if (!hobbyName) {
+       alert('Please provide a hobby name.');
+       return;
+     };
 
-    // Create the hobby object
-    const hobby = {
-      hobbyName,
-      difficulty,
-      description,
+     // Create the hobby object
+     const hobby = {
+       hobbyName,
+       difficulty,
+       description,
+     };
+
+     // Pass the new hobby data to the onSave function
+     await onSave(hobby);
+     onClose(); // Close the popup after saving
     };
-
-    // Pass the new hobby data to the onSave function
-    onSave(hobby);
-    onClose(); // Close the popup after saving
-  };
 
   return (
     <div
