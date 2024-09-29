@@ -14,7 +14,7 @@ const TaskPopup = ({ onClose, onSave, taskData = {}, fetchHobbies }) => {
   const [hobbies, setHobbies] = useState([]); // Store hobbies for the dropdown
   const [isVisible, setIsVisible] = useState(false);
   const [isColorDropdownOpen, setIsColorDropdownOpen] = useState(false); // Controls color dropdown visibility
-  const [startDateError, setStartDateError] = useState(false); // Tracks if start date is missing
+  const [startDateError, setStartDateError] = useState(true); // Tracks if start date is missing
 
 
   const colors = [

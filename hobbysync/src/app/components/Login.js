@@ -1,9 +1,10 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function Login({ onClose, onLogin }) {
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [loginError, setLoginError] = useState(null);
+  const modalRef = useRef();
 
   // Handle form changes
   const handleLoginChange = (e) => {
@@ -38,13 +39,27 @@ export default function Login({ onClose, onLogin }) {
     }
   };
 
+  // Close modal on outside click
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [onClose]);
+
   return (
     <div className="login-modal">
-      <div className="modal-content">
+      <div className="modal-content" ref={modalRef}>
         <h2>Login</h2>
         {loginError && <p className="error-message">{loginError}</p>}
         <form onSubmit={handleLogin}>
-          <div>
+          <div className="form-group">
             <label>Email:</label>
             <input
               type="email"
@@ -55,7 +70,7 @@ export default function Login({ onClose, onLogin }) {
               required
             />
           </div>
-          <div>
+          <div className="form-group">
             <label>Password:</label>
             <input
               type="password"
@@ -66,8 +81,8 @@ export default function Login({ onClose, onLogin }) {
               required
             />
           </div>
-          <button type="submit">Login</button>
-          <button type="button" onClick={onClose}>Cancel</button>
+          <button type="submit" className="login-button">Login</button>
+          <button type="button" className="cancel-button" onClick={onClose}>Cancel</button>
         </form>
       </div>
 
@@ -82,30 +97,64 @@ export default function Login({ onClose, onLogin }) {
           display: flex;
           justify-content: center;
           align-items: center;
-          background-color: rgba(0, 0, 0, 0.5);
+          background-color: rgba(0, 0, 0, 0.6);
+          z-index: 1000;
         }
         .modal-content {
-          background: white;
-          padding: 20px;
-          border-radius: 5px;
-          text-align: center;
-          box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+          background: #fff;
+          padding: 30px;
+          border-radius: 8px;
+          width: 100%;
+          max-width: 400px;
+          box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+          animation: fadeIn 0.3s ease-in-out;
         }
-        .modal-content form {
+        .modal-content h2 {
+          margin-bottom: 20px;
+          font-size: 24px;
+        }
+        .modal-content .form-group {
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          margin-bottom: 15px;
         }
-        .modal-content button {
-          margin-top: 10px;
+        .modal-content label {
+          margin-bottom: 8px;
+          font-weight: 500;
+          font-size: 14px;
+        }
+        .modal-content input {
+          padding: 10px;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          font-size: 16px;
+        }
+        .modal-content .login-button, .modal-content .cancel-button {
+          padding: 10px;
+          font-size: 16px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+        .modal-content .login-button {
+          background-color: #28a745;
+          color: white;
+          margin-right: 10px;
+        }
+        .modal-content .cancel-button {
+          background-color: #dc3545;
+          color: white;
         }
         .error-message {
           color: red;
           font-weight: bold;
+          margin-bottom: 10px;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
       `}</style>
     </div>
   );
 }
-
-
