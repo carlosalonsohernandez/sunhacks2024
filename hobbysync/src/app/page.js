@@ -72,7 +72,7 @@ export default function Home() {
         {/* Calendar for a specific month */}
         <div className="container mx-auto p-4">
           <h2 className="text-2xl font-bold mb-4">Calendar Component</h2>
-          <Calendar year={2023} month={8} /> {/* September 2023 (month is 0-based) */}
+          <Calendar year={2024} month={7} /> {/* September 2023 (month is 0-based) */}
         </div>
       </main>
 
