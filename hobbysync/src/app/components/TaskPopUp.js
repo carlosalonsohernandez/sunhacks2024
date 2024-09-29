@@ -12,7 +12,6 @@ const TaskPopup = ({ onClose, onSave }) => {
 
   const [isVisible, setIsVisible] = useState(false);
 
-  // Make the popup visible with animation after mounting
   useEffect(() => {
     setIsVisible(true);
   }, []);
@@ -36,7 +35,7 @@ const TaskPopup = ({ onClose, onSave }) => {
       className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
     >
       <div
-        className={`bg-white w-3/4 h-3/4 p-6 rounded-lg shadow-lg transform transition-all duration-500 ${isVisible ? 'scale-100' : 'scale-75'}`}
+        className={`bg-white w-[700px] h-[550px] p-6 rounded-lg shadow-lg transform transition-all duration-500 ${isVisible ? 'scale-100' : 'scale-75'}`}
       >
         <h2 className="text-2xl font-bold mb-4">Add New Task</h2>
 
@@ -51,7 +50,7 @@ const TaskPopup = ({ onClose, onSave }) => {
               className="w-full mt-1 p-2 border border-gray-300 rounded"
             />
           </label>
-          <label className="flex-2">
+          <label className="w-1/4">
             Start Date:
             <input
               type="date"
@@ -60,7 +59,7 @@ const TaskPopup = ({ onClose, onSave }) => {
               className="w-full mt-1 p-2 border border-gray-300 rounded"
             />
           </label>
-          <label className="flex-2">
+          <label className="w-1/4">
             End Date:
             <input
               type="date"
@@ -82,7 +81,7 @@ const TaskPopup = ({ onClose, onSave }) => {
               className="w-full mt-1 p-2 border border-gray-300 rounded"
             />
           </label>
-          <label className="flex-3">
+          <label className="w-1/4">
             Color:
             <input
               type="color"
@@ -91,7 +90,7 @@ const TaskPopup = ({ onClose, onSave }) => {
               className="w-full h-10 p-1 border border-gray-300 rounded"
             />
           </label>
-          <label className="flex-2">
+          <label className="w-1/3">
             Repetition:
             <select
               value={repeatFrequency}
@@ -112,7 +111,7 @@ const TaskPopup = ({ onClose, onSave }) => {
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="w-full mt-1 p-2 border border-gray-300 rounded h-20"
+            className="w-full mt-1 p-2 border border-gray-300 rounded h-40 resize-none" // Add resize-none class here
           />
         </label>
 
