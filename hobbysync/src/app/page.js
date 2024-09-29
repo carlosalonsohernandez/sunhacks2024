@@ -2,8 +2,28 @@
 import Footer from './components/Footer.js';
 import InteractiveBlock from './components/SingleCalendar.js';
 import Calendar from './components/Calendar.js';
+import { useState } from 'react';
 
 export default function Home() {
+  // State to manage the input values for year and month
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [month, setMonth] = useState(new Date().getMonth()); // 0-based index (0 = January, ..., 11 = December)
+
+  // Handlers for updating the state
+  const handleYearChange = (e) => {
+    let value = parseInt(e.target.value);
+    if (value > 2025) value = 2024; // Ensure year is not greater than 2025
+    if (value < 2000) value = 2000; // Ensure month is not less than 2000
+    setYear(parseInt(e.target.value));
+  };
+
+  const handleMonthChange = (e) => {
+    let value = parseInt(e.target.value);
+    if (value > 12) value = 12; // Ensure month is not greater than 12
+    if (value < 1) value = 1; // Ensure month is not less than 1
+    setMonth(value - 1); // Convert 1-based month to 0-based index
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <header className="header">
@@ -69,10 +89,43 @@ export default function Home() {
           <InteractiveBlock />
         </div>
 
+        {/* User Inputs for Month and Year */}
+        <div className="container mx-auto p-4">
+          <h2 className="text-2xl font-bold mb-4">Select Month and Year</h2>
+          <div className="flex gap-4 mb-4">
+            <div>
+              <label htmlFor="year" className="block text-lg font-medium">
+                Year:
+              </label>
+              <input
+                id="year"
+                type="number"
+                value={year}
+                onChange={handleYearChange}
+                className="border border-gray-300 p-2 rounded"
+              />
+            </div>
+            <div>
+              <label htmlFor="month" className="block text-lg font-medium">
+                Month:
+              </label>
+              <input
+                id="month"
+                type="number"
+                min="1"
+                max="12"
+                value={month + 1}
+                onChange={handleMonthChange}
+                className="border border-gray-300 p-2 rounded"
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Calendar for a specific month */}
         <div className="container mx-auto p-4">
           <h2 className="text-2xl font-bold mb-4">Calendar Component</h2>
-          <Calendar year={2024} month={7} /> {/* September 2023 (month is 0-based) */}
+          <Calendar year={year} month={month} />
         </div>
       </main>
 
