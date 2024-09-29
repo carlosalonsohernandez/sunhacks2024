@@ -3,7 +3,8 @@ import Link from 'next/link';
 const Footer = () => {
   return (
     <footer className="w-full bg-gray-800 text-white py-6">
-      <div className="container w-full px-4 flex flex-col md:flex-row justify-between items-center">
+      {/* Removed the container class */}
+      <div className="w-full px-4 flex flex-col md:flex-row justify-between items-center">
         <div className="text-center md:text-left">
           <h1 className="text-2xl font-bold">Company Name</h1>
           <p className="text-gray-400">© {new Date().getFullYear()} All Rights Reserved</p>

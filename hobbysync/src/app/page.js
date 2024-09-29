@@ -1,14 +1,14 @@
 "use client";
 import Footer from './components/Footer.js';
 import InteractiveBlock from './components/SingleCalendar.js';
+import Calendar from './components/Calendar.js';
 
 export default function Home() {
   return (
-
-    <div>
+    <div className="flex flex-col min-h-screen">
       <header className="header">
         <div className="left-section">
-          <div className="title">Habit Sync</div>
+          <div className="title">Hobbies Sync</div>
 
           {/* Menu section next to title */}
           <div className="menu-section">
@@ -63,19 +63,21 @@ export default function Home() {
         </div>
       </header>
 
-    <div className ="container w-full">
-    <main>
-      <p>Hello World</p>
-      <div className="container mx-auto p-4">
-      <h1 className="text-4xl font-bold mb-4">Interactive Block Component</h1>
-      <InteractiveBlock />
-    </div>
+      <main className="flex-grow">
+        <div className="container mx-auto p-4">
+          <h1 className="text-4xl font-bold mb-4">Interactive Block Component</h1>
+          <InteractiveBlock />
+        </div>
 
-    </main>
-   <footer className="container w-full p-4">
-      {/* Other page content */}
-      <footer />
-    </footer>
+        {/* Calendar for a specific month */}
+        <div className="container mx-auto p-4">
+          <h2 className="text-2xl font-bold mb-4">Calendar Component</h2>
+          <Calendar year={2023} month={8} /> {/* September 2023 (month is 0-based) */}
+        </div>
+      </main>
+
+      {/* Properly rendered Footer component */}
+      <Footer />
     </div>
   );
 }

@@ -117,6 +117,8 @@ body {
 .dropdown:focus-within .dropdown-contentp {
   display: block;
 }
+
 .arrow {
   margin-left: 5px;
+}
 }
