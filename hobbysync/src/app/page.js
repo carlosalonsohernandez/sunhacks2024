@@ -90,6 +90,7 @@ export default function Home() {
     } else {
       // Save a new task
       setTasks([...tasks, taskData]);
+      console.log(taskData);
     }
     setIsPopupOpen(false); // Close the popup after saving
   };
