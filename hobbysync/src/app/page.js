@@ -13,6 +13,8 @@ export default function Home() {
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth());
   const [isTaskPopupOpen, setIsTaskPopupOpen] = useState(false);
+  const [hobbies, setHobbies] = useState([]);
+  const [isHobbyPopupOpen, setIsHobbyPopupOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
   const [isLoginOpen, setIsLoginOpen] = useState(false); // Track login modal visibility
