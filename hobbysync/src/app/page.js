@@ -13,8 +13,11 @@ export default function Home() {
   const [tasks, setTasks] = useState([]);
 
   const [taskToEditIndex, setTaskToEditIndex] = useState(null); // Track which task is being edited
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Add this to track login status
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
+  const [isLoginOpen, setIsLoginOpen] = useState(false); 
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
+  // Handle Year Change
   const handleYearChange = (e) => {
     let value = parseInt(e.target.value);
     if (value > 2025) value = 2024;
@@ -22,8 +25,13 @@ export default function Home() {
     setYear(value);
   };
 
-  const [isLoginOpen, setIsLoginOpen] = useState(false); 
-  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  // Handle Month Change
+  const handleMonthChange = (e) => {
+    let value = parseInt(e.target.value);
+    if (value > 12) value = 12;
+    if (value < 1) value = 1;
+    setMonth(value - 1);
+  };
 
   // Handle login
   const handleLogin = (userData) => {
@@ -49,13 +57,6 @@ export default function Home() {
     }
   };
 
-  const handleMonthChange = (e) => {
-    let value = parseInt(e.target.value);
-    if (value > 12) value = 12;
-    if (value < 1) value = 1;
-    setMonth(value - 1);
-  };
-
   // Open the popup for a new task
   const openPopup = () => {
     setTaskToEditIndex(null); // New task
@@ -71,14 +72,11 @@ export default function Home() {
   const getRecurringDates = (task) => {
     const { startDate, endDate, repeatFrequency } = task;
     const recurringDates = [];
-
     let currentDate = new Date(startDate);
     const lastDate = endDate ? new Date(endDate) : new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), currentDate.getDate()); // Default to one year if no end date
 
     while (currentDate <= lastDate) {
       recurringDates.push(new Date(currentDate)); // Store the current date
-
-      // Increment based on the repeat frequency
       if (repeatFrequency === 'Daily') {
         currentDate.setDate(currentDate.getDate() + 1);
       } else if (repeatFrequency === 'Weekly') {
@@ -89,26 +87,18 @@ export default function Home() {
         break; // No repeat if the frequency is "None"
       }
     }
-
     return recurringDates;
   };
 
   // Save a new task or update an existing one
   const handleSaveTask = (taskData) => {
     const updatedTasks = [...tasks];
-
-    // If we're editing a task, update it
+    const recurringDates = getRecurringDates(taskData);
     if (taskToEditIndex !== null) {
-      updatedTasks[taskToEditIndex] = taskData;
+      updatedTasks[taskToEditIndex] = { ...taskData, recurringDates };
     } else {
-      // If it's a new task, calculate its recurring dates and save
-      const recurringDates = getRecurringDates(taskData);
-      updatedTasks.push({
-        ...taskData,
-        recurringDates, // Store the list of dates the task should appear on
-      });
+      updatedTasks.push({ ...taskData, recurringDates });
     }
-
     setTasks(updatedTasks);
     setIsPopupOpen(false); // Close the popup after saving
   };
@@ -122,7 +112,43 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <header className="header">
-        {/* Your header code */}
+        <div className="left-section">
+          <a href="https://imgbb.com/">
+            <img 
+              src="https://i.ibb.co/X5849y8/hbslogo.png" 
+              alt="Hobbies Sync Logo" 
+              className="logo" 
+              style={{ height: '40px', width: 'auto' }} // Adjust size as needed
+            />
+          </a>
+          <div className="menu-section">
+            <div className="dropdown menu-dropdown">
+              <button className="dropbtn">
+                Menu <i className="arrow down"></i>
+              </button>
+              <div className="dropdown-content">
+                <a href="#home">Home</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="dropdown profile-dropdown">
+          <button className="dropbtnp">
+            <img src="https://via.placeholder.com/40" alt="Profile Icon" className="profile-icon" />
+          </button>
+          <div className="dropdown-contentp">
+            <a href="#profile">Profile</a>
+            <a href="#settings">Settings</a>
+            <a href="#login-logout" onClick={handleLogoutOrSignIn}>
+              {isLoggedIn ? 'Logout' : 'Sign In'}
+            </a>
+            {!isLoggedIn && (
+              <a href="#register" onClick={() => setIsRegisterOpen(true)}>Register</a>
+            )}
+          </div>
+        </div>
       </header>
 
       <main className="flex-grow">
@@ -185,6 +211,23 @@ export default function Home() {
       </main>
 
       <Footer />
+
+      {/* Login Modal */}
+      {isLoginOpen && (
+        <Login
+          onClose={() => setIsLoginOpen(false)} // Close the login modal
+          onLogin={handleLogin} // Handle successful login
+        />
+      )}
+
+      {/* Register Modal */}
+      {isRegisterOpen && (
+        <Register
+          onClose={() => setIsRegisterOpen(false)}
+          onRegister={handleRegister}
+        />
+      )}
+
     </div>
   );
 }

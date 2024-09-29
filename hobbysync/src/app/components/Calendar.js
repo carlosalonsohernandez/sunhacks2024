@@ -22,7 +22,7 @@ const Calendar = ({ year, month, tasks, onEditTask }) => {
 
   // Check if a task falls on a specific day, based on its recurring dates
   const isTaskOnDay = (day, task) => {
-    return task.recurringDates.some((date) => {
+    return (task.recurringDates || []).some((date) => {
       const taskDate = new Date(date);
       return taskDate.getFullYear() === year && taskDate.getMonth() === month && taskDate.getDate() === day;
     });
