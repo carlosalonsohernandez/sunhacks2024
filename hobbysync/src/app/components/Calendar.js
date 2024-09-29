@@ -1,26 +1,19 @@
 "use client";
 
 const Calendar = ({ year, month, tasks, onEditTask }) => {
-  // List of month names to convert the month index to the correct name
   const monthNames = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
   ];
 
-  // Calculate the number of days in the given month and year
   const getDaysInMonth = (year, month) => {
     return new Date(year, month + 1, 0).getDate();
   };
 
   const daysInMonth = getDaysInMonth(year, month);
-  
-  // Get the day of the week for the first day of the month
   const firstDayOfWeek = new Date(year, month, 1).getDay();
-
-  // Create an array of numbers representing each day of the month
   const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
-  // Check if a task falls on a specific day, based on its recurring dates
   const isTaskOnDay = (day, task) => {
     return (task.recurringDates || []).some((date) => {
       const taskDate = new Date(date);
@@ -28,7 +21,6 @@ const Calendar = ({ year, month, tasks, onEditTask }) => {
     });
   };
 
-  // Get tasks for a specific day
   const getTasksForDay = (day) => {
     return tasks.filter(task => isTaskOnDay(day, task));
   };
@@ -47,26 +39,33 @@ const Calendar = ({ year, month, tasks, onEditTask }) => {
       </div>
 
       {/* Days in Month */}
-      <div className="grid grid-cols-7 auto-rows-auto gap-2 mt-4">
+      <div className="grid grid-cols-7 auto-rows-min gap-2 mt-4">
         {/* Empty divs to align the first day correctly */}
         {Array.from({ length: firstDayOfWeek }).map((_, index) => (
-          <div className="border-black-300 border-2 border-solid w-24 md:w-auto h-24 min-h-0 md:min-h-full" key={`empty-${index}`} ></div>
+          <div className="border-black-300 border-2 border-solid min-h-24" key={`empty-${index}`}></div>
         ))}
         
         {/* Render the actual days of the month */}
         {daysArray.map((day) => (
-          <div key={day} className="border-black border-2 border-solid w-24 md:w-auto h-24 min-h-0 md:min-h-full relative">
-            <span>{day}</span>
+          <div key={day} className="border-black border-2 border-solid min-h-24 relative p-1">
+            <span className="absolute top-1 left-2 text-xs">{day}</span>
             {/* Render task tags inside the day cell */}
-            <div className="flex flex-wrap gap-1 mt-2">
+            <div className="flex flex-col items-center justify-start gap-1 mt-4">
               {getTasksForDay(day).map((task, index) => (
                 <div
                   key={index}
-                  className="py-1 px-2 bg-white border border-gray-300 rounded-full text-xs truncate cursor-pointer"
+                  className="py-1 px-2 bg-white border border-gray-300 rounded-full text-xs truncate cursor-pointer text-center"
                   style={{ backgroundColor: task.color }}
                   onClick={() => onEditTask(tasks.indexOf(task))} // Trigger editing on click
                 >
-                  {task.taskName.length > 6 ? `${task.taskName.slice(0, 6)}...` : task.taskName}
+                  {task.associatedHobby && (
+                    <div className="font-bold text-xs mb-1 text-center">
+                      {task.associatedHobby.length > 15 ? `${task.associatedHobby.slice(0, 15)}...` : task.associatedHobby}
+                    </div>
+                  )}
+                  <div className="text-center">
+                    {task.taskName.length > 15 ? `${task.taskName.slice(0, 15)}...` : task.taskName}
+                  </div>
                 </div>
               ))}
             </div>

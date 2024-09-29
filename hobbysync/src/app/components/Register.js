@@ -1,4 +1,5 @@
-import { useState } from 'react';
+"use client";
+import { useState, useEffect, useRef } from 'react';
 
 export default function Register({ onClose, onRegister }) {
   const [registerData, setRegisterData] = useState({
@@ -18,6 +19,7 @@ export default function Register({ onClose, onRegister }) {
 
   const [currentStep, setCurrentStep] = useState(0); // Track the current step
   const [registerError, setRegisterError] = useState(null);
+  const modalRef = useRef();
 
   // Handle input changes for text, email, etc.
   const handleRegisterChange = (e) => {
@@ -87,6 +89,20 @@ export default function Register({ onClose, onRegister }) {
     }
   };
 
+  // Close modal on outside click
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [onClose]);
+
   // Function to go to the next step
   const nextStep = () => {
     setCurrentStep(currentStep + 1);
@@ -122,7 +138,7 @@ export default function Register({ onClose, onRegister }) {
 
   return (
     <div className="register-modal">
-      <div className="modal-content">
+      <div className="modal-content" ref={modalRef}>
         <h2>Register</h2>
         {registerError && <p className="error-message">{registerError}</p>}
         <form onSubmit={handleRegisterSubmit}>
@@ -132,73 +148,21 @@ export default function Register({ onClose, onRegister }) {
               <div key={index} className="checkbox-group">
                 <label>{field.label}:</label>
                 <div>
-                  <label>
-                    <input
-                      type="checkbox"
-                      value="Monday"
-                      checked={registerData.availability.daysOfWeek.includes('Monday')}
-                      onChange={handleDaySelection}
-                    />
-                    Monday
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      value="Tuesday"
-                      checked={registerData.availability.daysOfWeek.includes('Tuesday')}
-                      onChange={handleDaySelection}
-                    />
-                    Tuesday
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      value="Wednesday"
-                      checked={registerData.availability.daysOfWeek.includes('Wednesday')}
-                      onChange={handleDaySelection}
-                    />
-                    Wednesday
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      value="Thursday"
-                      checked={registerData.availability.daysOfWeek.includes('Thursday')}
-                      onChange={handleDaySelection}
-                    />
-                    Thursday
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      value="Friday"
-                      checked={registerData.availability.daysOfWeek.includes('Friday')}
-                      onChange={handleDaySelection}
-                    />
-                    Friday
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      value="Saturday"
-                      checked={registerData.availability.daysOfWeek.includes('Saturday')}
-                      onChange={handleDaySelection}
-                    />
-                    Saturday
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      value="Sunday"
-                      checked={registerData.availability.daysOfWeek.includes('Sunday')}
-                      onChange={handleDaySelection}
-                    />
-                    Sunday
-                  </label>
+                  {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => (
+                    <label key={day}>
+                      <input
+                        type="checkbox"
+                        value={day}
+                        checked={registerData.availability.daysOfWeek.includes(day)}
+                        onChange={handleDaySelection}
+                      />
+                      {day}
+                    </label>
+                  ))}
                 </div>
               </div>
             ) : (
-              <div key={index}>
+              <div key={index} className="form-group">
                 <label>{field.label}:</label>
                 <input
                   type={field.type}
@@ -216,20 +180,19 @@ export default function Register({ onClose, onRegister }) {
           <div className="navigation-buttons">
             {currentStep > 0 && (
               <button type="button" onClick={previousStep} className="prev-button">
-                <span className="arrow">←</span>
+                <span className="arrow">←</span> Previous
               </button>
             )}
             {currentStep < steps.length - 1 && (
               <button type="button" onClick={nextStep} className="next-button">
-                <span className="arrow">→</span>
+                Next <span className="arrow">→</span>
               </button>
             )}
             {currentStep === steps.length - 1 && (
-              <button type="submit" className="submit-button">Submit</button>
+              <button type="submit" className="submit-button">Register</button>
             )}
+            <button type="button" onClick={onClose} className="cancel-button">Cancel</button>
           </div>
-
-          <button type="button" onClick={onClose} className="cancel-button">Cancel</button>
         </form>
       </div>
 
@@ -243,31 +206,78 @@ export default function Register({ onClose, onRegister }) {
           display: flex;
           justify-content: center;
           align-items: center;
-          background-color: rgba(0, 0, 0, 0.5);
+          background-color: rgba(0, 0, 0, 0.6);
+          z-index: 1000;
         }
         .modal-content {
           background: white;
-          padding: 20px;
-          border-radius: 5px;
-          text-align: center;
+          padding: 30px;
+          border-radius: 8px;
+          width: 100%;
+          max-width: 500px;
+          box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+          animation: fadeIn 0.3s ease-in-out;
         }
-        .checkbox-group label {
-          display: inline-block;
-          margin-right: 10px;
+        .modal-content h2 {
+          margin-bottom: 20px;
+          font-size: 24px;
+        }
+        .form-group {
+          display: flex;
+          flex-direction: column;
+          margin-bottom: 15px;
+        }
+        .modal-content label {
+          margin-bottom: 8px;
+          font-weight: 500;
+          font-size: 14px;
+        }
+        .modal-content input {
+          padding: 10px;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          font-size: 16px;
         }
         .navigation-buttons {
           display: flex;
           justify-content: space-between;
+          align-items: center;
           margin-top: 10px;
         }
-        .arrow {
-          font-size: 24px;
+        .prev-button, .next-button, .submit-button, .cancel-button {
+          padding: 10px;
+          font-size: 16px;
+          border: none;
+          border-radius: 4px;
           cursor: pointer;
-          color: #336394;
+        }
+        .prev-button {
+          background-color: #007bff;
+          color: white;
+          margin-right: 5px;
+        }
+        .next-button {
+          background-color: #28a745;
+          color: white;
+          margin-right: 5px;
+        }
+        .submit-button {
+          background-color: #17a2b8;
+          color: white;
+          margin-right: 5px;
+        }
+        .cancel-button {
+          background-color: #dc3545;
+          color: white;
         }
         .error-message {
           color: red;
           font-weight: bold;
+          margin-bottom: 15px;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
       `}</style>
     </div>
