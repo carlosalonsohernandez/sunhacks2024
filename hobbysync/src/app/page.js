@@ -5,6 +5,7 @@ import Calendar from './components/Calendar.js';
 import TaskPopup from './components/TaskPopUp.js'; 
 import Register from './components/Register.js'; 
 import Login from './components/Login.js'; // Import the new Login component
+import { stringify } from 'postcss';
 
 export default function Home() {
   const [year, setYear] = useState(new Date().getFullYear());
@@ -25,6 +26,8 @@ export default function Home() {
     if (value < 2000) value = 2000;
     setYear(value);
   }
+
+  const [currentUser, setCurrentUser] = useState(null); // State to store current user
 
   const handleLoginChange = (e) => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
@@ -64,6 +67,17 @@ export default function Home() {
         setIsLoggedIn(true); // Successfully logged in
         setIsLoginOpen(false); // Close login modal
         console.log('Login successful:', result);
+        user = {
+          "userId" : result.userId,
+          "email" : login.email,
+          "password" : login.password,
+          "username" : result.username,
+          "age" : result.age
+        }
+        setCurrentUser(user);
+        console.log('hello');
+        console.log(JSON.stringify(user));
+        localStorage.setItem('user', JSON.stringify(user)); // Save user in localStorage
       } else {
         const errorData = await response.json();
         setLoginError(errorData.message || 'Login failed'); // Set error message
