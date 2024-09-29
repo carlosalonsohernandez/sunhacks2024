@@ -135,7 +135,6 @@ export default function Home() {
           )}
         </div>
 
-
         {/* User Inputs for Month and Year */}
         <div className="container mx-auto p-4">
           <div className="flex gap-4 mb-4">
