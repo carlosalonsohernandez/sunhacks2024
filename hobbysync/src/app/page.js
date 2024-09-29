@@ -4,14 +4,54 @@ import Footer from './components/Footer.js';
 import Calendar from './components/Calendar.js'; 
 import TaskPopup from './components/TaskPopUp.js'; 
 import Register from './components/Register.js'; 
+import HobbyPopup from './components/HobbyPopUp.js'; 
 import Login from './components/Login.js'; // Import the new Login component
 import axios from "axios"
 
 export default function Home() {
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth());
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isTaskPopupOpen, setIsTaskPopupOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
+  const [taskToEditIndex, setTaskToEditIndex] = useState(null); 
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
+
+  // Hobby state
+  const [isHobbyPopupOpen, setIsHobbyPopupOpen] = useState(false); 
+  const [hobbies, setHobbies] = useState([]); 
+
+  // Handle Profile Click
+  const handleProfileClick = () => {
+    console.log("Profile clicked");
+  };
+
+  const [isLoginOpen, setIsLoginOpen] = useState(false); 
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+
+  // Handle login
+  const handleLogin = (userData) => {
+    localStorage.setItem('user', JSON.stringify(userData)); 
+    setIsLoggedIn(true); 
+    setIsLoginOpen(false); 
+  };
+
+  // Handle register
+  const handleRegister = (userData) => {
+    localStorage.setItem('user', JSON.stringify(userData)); 
+    setIsLoggedIn(true);
+    setIsRegisterOpen(false); 
+  };
+
+  // Handle logging out
+  const handleLogoutOrSignIn = () => {
+    if (isLoggedIn) {
+      localStorage.removeItem('user'); 
+      setIsLoggedIn(false); 
+    } else {
+      setIsLoginOpen(true); 
+    }
+  };
+
 
   const [taskToEditIndex, setTaskToEditIndex] = useState(null); // Track which task is being edited
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
@@ -61,14 +101,14 @@ export default function Home() {
   };
 
   // Open the popup for a new task
-  const openPopup = () => {
-    setTaskToEditIndex(null); // New task
-    setIsPopupOpen(true);
+  const openTaskPopup = () => {
+    setTaskToEditIndex(null); 
+    setIsTaskPopupOpen(true);
   };
 
-  // Close the popup
-  const closePopup = () => {
-    setIsPopupOpen(false);
+  // Close the task popup
+  const closeTaskPopup = () => {
+    setIsTaskPopupOpen(false);
   };
 
   // Helper function to calculate recurring dates based on frequency
@@ -98,6 +138,14 @@ export default function Home() {
     const updatedTasks = [...tasks];
     const recurringDates = getRecurringDates(taskData);
     if (taskToEditIndex !== null) {
+      const updatedTasks = tasks.map((task, index) =>
+        index === taskToEditIndex ? taskData : task
+      );
+      setTasks(updatedTasks);
+    } else {
+      setTasks([...tasks, taskData]);
+    }
+    setIsTaskPopupOpen(false); 
       updatedTasks[taskToEditIndex] = { ...taskData, recurringDates };
     } else {
       updatedTasks.push({ ...taskData, recurringDates });
@@ -109,7 +157,28 @@ export default function Home() {
   // Open the popup to edit a task
   const handleEditTask = (index) => {
     setTaskToEditIndex(index);
-    setIsPopupOpen(true); // Open the popup for editing
+    setIsTaskPopupOpen(true); 
+  };
+
+  // Helper function to truncate the task name
+  const truncateTaskName = (name) => {
+    return name.length > 6 ? `${name.substring(0, 6)}...` : name;
+  };
+
+  // Open the hobby popup
+  const openHobbyPopup = () => {
+    setIsHobbyPopupOpen(true);
+  };
+
+  // Close the hobby popup
+  const closeHobbyPopup = () => {
+    setIsHobbyPopupOpen(false);
+  };
+
+  // Save a new hobby
+  const handleSaveHobby = (newHobby) => {
+    setHobbies([...hobbies, newHobby]);
+    setIsHobbyPopupOpen(false); 
   };
 
   return (
@@ -121,7 +190,7 @@ export default function Home() {
               src="https://i.ibb.co/X5849y8/hbslogo.png" 
               alt="Hobbies Sync Logo" 
               className="logo" 
-              style={{ height: '40px', width: 'auto' }} // Adjust size as needed
+              style={{ height: '40px', width: 'auto' }} 
             />
           </a>
           <div className="menu-section">
@@ -156,20 +225,32 @@ export default function Home() {
 
       <main className="flex-grow">
         <div className="container mx-auto px-4 pb-4">
+
+          <button onClick={openTaskPopup} className="px-4 py-2 bg-green-500 text-white rounded absolute right-4">
+
           <button onClick={openPopup} className="px-4 py-2 bg-green-500 text-white rounded absolute right-4">
+
             Add Task
           </button>
 
+          <button onClick={openHobbyPopup} className="px-4 py-2 bg-blue-500 text-white rounded absolute right-28">
+            Add Hobby
+          </button>
+
           {/* Task Popup */}
-          {isPopupOpen && (
+          {isTaskPopupOpen && (
             <TaskPopup
-              onClose={closePopup}
+              onClose={closeTaskPopup}
               onSave={handleSaveTask}
               taskData={taskToEditIndex !== null ? tasks[taskToEditIndex] : {}}
             />
           )}
 
-          {/* User Inputs for Month and Year */}
+          {/* Hobby Popup */}
+          {isHobbyPopupOpen && (
+            <HobbyPopup onClose={closeHobbyPopup} onSave={handleSaveHobby} />
+          )}
+
           <div className="container mx-auto px-4 pb-4"> 
             <div className="flex gap-4 mb-4">
               <label htmlFor="year" className="block text-lg font-medium">
@@ -210,6 +291,15 @@ export default function Home() {
 
           {/* Render Calendar component with tasks */}
           <Calendar year={year} month={month} tasks={tasks} onEditTask={handleEditTask} />
+
+          {/* List of hobbies */}
+          <ul className="mt-4">
+            {hobbies.map((hobby, index) => (
+              <li key={index} className="py-1">
+                {hobby.hobbyName} (Difficulty: {hobby.difficulty}) - {hobby.description}
+              </li>
+            ))}
+          </ul>
         </div>
       </main>
 
@@ -218,8 +308,13 @@ export default function Home() {
       {/* Login Modal */}
       {isLoginOpen && (
         <Login
+
+          onClose={() => setIsLoginOpen(false)} 
+          onLogin={handleLogin} 
+
           onClose={() => setIsLoginOpen(false)} // Close the login modal
           onLogin={handleLogin} // Handle successful login
+
         />
       )}
 
