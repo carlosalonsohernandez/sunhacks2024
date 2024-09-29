@@ -1,6 +1,5 @@
 // components/InteractiveBlock.js
-"use client"; // Ensure it's a Client Component for using useState
-import { useState } from "react";
+"use client";
 
 const Calendar = ({ year, month }) => {
   // Calculate the number of days in the given month and year

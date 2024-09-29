@@ -1,8 +1,5 @@
-
-      
 "use client";
 import Footer from './components/Footer.js';
-import InteractiveBlock from './components/SingleCalendar.js';
 import Calendar from './components/Calendar.js';
 import { useState } from 'react';
 import TaskPopup from './components/TaskPopUp.js';
@@ -35,7 +32,7 @@ export default function Home() {
 
   const handleSaveTask = (taskData) => {
     setTasks([...tasks, taskData]);
-    };
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -97,9 +94,41 @@ export default function Home() {
       </header>
 
       <main className="flex-grow">
-        <div className="container mx-auto p-4">
-          <h1 className="text-4xl font-bold mb-4">Interactive Block Component</h1>
-          <InteractiveBlock />
+         {/* Task Calendar Section */}
+         <div className="container mx-auto p-4">
+          <h1 className="text-4xl font-bold mb-4">Task Calendar</h1>
+          <button
+            onClick={openPopup}
+            className="px-4 py-2 bg-green-500 text-white rounded"
+          >
+            Add Task
+          </button>
+
+          {/* Task List */}
+          <div className="mt-6">
+            {tasks.map((task, index) => (
+              <div
+                key={index}
+                className="p-4 mb-2 border border-gray-300 rounded"
+                style={{ backgroundColor: task.color }}
+              >
+                <h2 className="text-xl font-bold">{task.taskName}</h2>
+                <p>{task.notes}</p>
+                <p>Time: {task.time}</p>
+                <p>Repeat: {task.repeatFrequency}</p>
+                <p>
+                  Dates: {task.startDate} to {task.endDate}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {isPopupOpen && (
+            <TaskPopup
+              onClose={closePopup}
+              onSave={handleSaveTask}
+            />
+          )}
         </div>
 
         {/* User Inputs for Month and Year */}
@@ -140,44 +169,10 @@ export default function Home() {
           <h2 className="text-2xl font-bold mb-4">Calendar Component</h2>
           <Calendar year={year} month={month} />
         </div>
-<div className="container mx-auto p-4">
-      <h1 className="text-4xl font-bold mb-4">Task Calendar</h1>
-      <button
-        onClick={openPopup}
-        className="px-4 py-2 bg-green-500 text-white rounded"
-      >
-        Add Task
-      </button>
-
-      {/* Task List */}
-      <div className="mt-6">
-        {tasks.map((task, index) => (
-          <div
-            key={index}
-            className="p-4 mb-2 border border-gray-300 rounded"
-            style={{ backgroundColor: task.color }}
-          >
-            <h2 className="text-xl font-bold">{task.taskName}</h2>
-            <p>{task.notes}</p>
-            <p>Time: {task.time}</p>
-            <p>Repeat: {task.repeatFrequency}</p>
-            <p>
-              Dates: {task.startDate} to {task.endDate}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      {isPopupOpen && (
-        <TaskPopup
-          onClose={closePopup}
-          onSave={handleSaveTask}
-        />
       </main>
 
       {/* Properly rendered Footer component */}
       <Footer />
     </div>
-
-    );
+  );
 }
